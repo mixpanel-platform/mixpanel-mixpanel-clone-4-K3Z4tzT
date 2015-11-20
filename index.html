@@ -7,7 +7,7 @@
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
-    <h1>Hello, World!</h1>
+    <p></p>
     <script>
     var params = {}
       var script = "var event_list = ['homepage new', 'Viewed report', 'Funnel query'];"
@@ -92,7 +92,7 @@
         'to_date': '2015-11-19',
         'params': {}
       }).done(function(results) {
-        console.log(results);
+        $('body').append(results);
       })
     </script>
   </body>
