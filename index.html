@@ -92,7 +92,7 @@
       var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
       $('<div class="dropped"></div>').height(dropped*ratio).appendTo(funnelStep);
       $('<div class="converted"></div>').height(converted*ratio).appendTo(funnelStep).addClass(first);
-      $('<div class="column-label>' + eventName + '</div>').appendTo(funnelStep);
+      $('<div class="column-label">' + eventName + '</div>').appendTo(funnelStep);
     }
     
     function calculateGraphRatio(count) {
