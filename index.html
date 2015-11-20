@@ -85,10 +85,9 @@
             "});"+
         "}";
       
-      MP.api.query('api/2.0/custom_query_v1/', {
+      MP.api.custom_query(script, {
         'from_date': '2015-11-01',
         'to_date': '2015-11-19',
-        'script': script,
         'params': params
       }).done(function(results) {
         $('p').text(JSON.stringify(results));
