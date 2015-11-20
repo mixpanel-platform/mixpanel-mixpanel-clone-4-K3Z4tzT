@@ -24,10 +24,10 @@
       margin-left: 55px;
       border-left: 1px solid #d4e0e8;
       border-radius: 0 5px 5px 0;
-      position: absolute;
+      position: relative;
     }
     #graph-overlay {
-      position: absolute;
+      position: relative;
       margin-left: 55px;
     }
     .line {
@@ -48,6 +48,9 @@
     }
     .dropped {
       background-color: #e0e3ed;
+    }
+    .column-label {
+      bottom: -45px;
     }
     </style>
     <div class="mixpanel-platform-section">
@@ -83,6 +86,7 @@
       var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
       $('<div class="dropped"></div>').height(dropped*ratio).appendTo(funnelStep);
       $('<div class="converted"></div>').height(converted*ratio).appendTo(funnelStep);
+      $('<div class="column-label>' + eventName + '</div>').appendTo(funnelStep);
     }
     
     function calculateGraphRatio(count) {
