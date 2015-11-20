@@ -10,80 +10,80 @@
     <p></p>
     <script>
     var params = {}
-      var script = "var event_list = ['homepage new', 'Viewed report', 'Funnel query'];"
-+        "function main() {"
-+            "return Events({})"
-+            ".filter(function(event){ return event['user_id']>500000})"
-            +".groupByUser(function(state, events) {"
-             +   "state = state || {"
-+                    "event_path: [],"
- +                   "funnel_step: 0"
-  +              "};"
-   +             "for (var i = 0; i < events.length; ++i) {"
-    +                "if ((state.event_path.length === 0 && events[i]['name'] == event_list[0]) || state.event_path.length > 0) {"
-     +                   "state.event_path.push(events[i]['name']);"
-      +                  "state.funnel_step = 1;"
-       +             "}"
-        +        "}"
-         +       "return state;"
-+            "})"
-+            ".filter(function(item) {"
- +               "return item.value && item.value.funnel_step > 0;"
-  +          "})"
-   +         ".reduce(function(accumulators, items) {"
-    +            "var ret = [];"
-     +           "for (var j = 0; j < accumulators.length; j++) {"
-      +              "ret = accumulators[j];"
-       +         "}"
-        +        "for (var i = 0; i < items.length; i++) {"
-         +           "ret[i] = {funnel_step: items[i].value.funnel_step, dropoff_path: []};"
-          +          "_.each(event_list.slice(1), function(event, j) {"
-           +             "var eventIndex = items[i].value.event_path.indexOf(event);"
-            +            "if (eventIndex > -1) {"
-             +               "items[i].value.event_path.splice(0, eventIndex+1);"
-              +              "ret[i].funnel_step ++;"
-               +         "}"
-                +        "else {"
-                 +           "items[i].value.event_path.splice(3, items[i].value.event_path.length);"
-                  +          "ret[i].dropoff_path = items[i].value.event_path;"
-                   +     "}"
-+                    "});"
- +                   "ret[i].funnel_step = event_list[ret[i].funnel_step-1]"
-  +              "}"
-   +             "return ret;"
-    +        "})"
-     +       ".reduce(function(accumulators, items) {"
-      +          "var result = {};"
-       +         "for (var i = 0; i < items.length; i++) {"
-        +            "for (var j = 0; j < items[i].length; j++) {"
-         +               "var eventName = items[i][j].funnel_step;"
-          +              "var path = items[i][j].dropoff_path;"
-           +             "result[eventName] = result[eventName] || {count: 0, all_paths: []};"
-            +            "result[eventName].count ++;"
-             +           "result[eventName].all_paths.push(path);"
-              +      "}"
-               + "}"
-+                "return result;"
- +           "})"
-  +          ".reduce(function(accumulators, items) {"
-   +             "var solution = {};"
-    +            "for (var i = 0; i < items.length; i++) {"
-     +               "_.each(Object.keys(items[i]), function(eventName) {"
-      +                  "solution[eventName] = solution[eventName] || {count: items[i][eventName].count, flows: {}}"
-       +                 "for (var k in items[i][eventName].all_paths) {"
-        +                    "var s = solution[eventName].flows;"
-         +                   "for (var z in items[i][eventName].all_paths[k]){"
-          +                      "var e = items[i][eventName].all_paths[k][z]"
-           +                     "s[e] = s[e] || {'count':0, 'next':{}};"
-            +                    "s[e].count++;"
-             +                   "s = s[e].next;"
-              +              "}"
-               +         "}"
-                +    "})"
-+                "}"
- +               "return solution;"
-  +          "});"
-   +     "}";
+      var script = "var event_list = ['homepage new', 'Viewed report', 'Funnel query'];" +
+        "function main() {" +
+            "return Events({})" +
+            ".filter(function(event){ return event['user_id']>500000})" +
+            ".groupByUser(function(state, events) {" +
+                "state = state || {"+
+                    "event_path: [],"+
+                    "funnel_step: 0"+
+                "};"+
+                "for (var i = 0; i < events.length; ++i) {"+
+                    "if ((state.event_path.length === 0 && events[i]['name'] == event_list[0]) || state.event_path.length > 0) {"+
+                        "state.event_path.push(events[i]['name']);"+
+                        "state.funnel_step = 1;"+
+                    "}"+
+                "}"+
+                "return state;"+
+            "})"+
+            ".filter(function(item) {"+
+                "return item.value && item.value.funnel_step > 0;"+
+            "})"+
+            ".reduce(function(accumulators, items) {"+
+                "var ret = [];"+
+                "for (var j = 0; j < accumulators.length; j++) {"+
+                    "ret = accumulators[j];"+
+                "}"+
+                "for (var i = 0; i < items.length; i++) {"+
+                    "ret[i] = {funnel_step: items[i].value.funnel_step, dropoff_path: []};"+
+                    "_.each(event_list.slice(1), function(event, j) {"+
+                        "var eventIndex = items[i].value.event_path.indexOf(event);"+
+                        "if (eventIndex > -1) {"+
+                            "items[i].value.event_path.splice(0, eventIndex+1);"+
+                            "ret[i].funnel_step ++;"+
+                        "}"+
+                        "else {"+
+                            "items[i].value.event_path.splice(3, items[i].value.event_path.length);"+
+                            "ret[i].dropoff_path = items[i].value.event_path;"+
+                        "}"+
+                    "});"+
+                    "ret[i].funnel_step = event_list[ret[i].funnel_step-1]"+
+                "}"+
+                "return ret;"+
+            "})"+
+            ".reduce(function(accumulators, items) {"+
+                "var result = {};"+
+                "for (var i = 0; i < items.length; i++) {"+
+                    "for (var j = 0; j < items[i].length; j++) {"+
+                        "var eventName = items[i][j].funnel_step;"+
+                        "var path = items[i][j].dropoff_path;"+
+                        "result[eventName] = result[eventName] || {count: 0, all_paths: []};"+
+                        "result[eventName].count ++;"+
+                        "result[eventName].all_paths.push(path);"+
+                    "}"+
+                "}"+
+                "return result;"+
+            "})"+
+            ".reduce(function(accumulators, items) {"+
+                "var solution = {};"+
+                "for (var i = 0; i < items.length; i++) {"+
+                    "_.each(Object.keys(items[i]), function(eventName) {"+
+                        "solution[eventName] = solution[eventName] || {count: items[i][eventName].count, flows: {}}"+
+                        "for (var k in items[i][eventName].all_paths) {"+
+                            "var s = solution[eventName].flows;"+
+                            "for (var z in items[i][eventName].all_paths[k]){"+
+                                "var e = items[i][eventName].all_paths[k][z]"+
+                                "s[e] = s[e] || {'count':0, 'next':{}};"+
+                                "s[e].count++;"+
+                                "s = s[e].next;"+
+                            "}"+
+                        "}"+
+                    "})"+
+                "}"+
+                "return solution;"+
+            "});"+
+        "}";
       
       
       
