@@ -8,20 +8,55 @@
     <script src="mixpanel-platform.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
-    <div id="funnel"></div>
+    <style>
+    .background {
+      background-color: white;
+      -webkit-border-radius: 5px;
+      border-radius: 5px;
+    }
+    .line {
+      border-top: 1px dashed #d2dfe7;
+      height: 55px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    </style>
+    <div class="mixpanel-platform-section">
+      <div id="dates"></div>
+      <div id="funnel">
+        <div id="background">
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+        </div>
+      </div>
+    </div>
     <p></p>
     <script>
     // create funnel
-      var funnelGraph = $('#funnel');
-      function addFunnelStep(eventName, converted, dropped) {
-        var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
-        $('<div class="dropped"></div>').height(dropped).appendTo(funnelStep);
-        $('<div class="converted"></div>').height(converted).appendTo(funnelStep);
-        adjustGraphHeight();
-      }
+    $('#dates').MPDatepicker();
+    var funnelGraph = $('#graph');
+    function addFunnelStep(eventName, converted, dropped) {
+      var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
+      $('<div class="dropped"></div>').height(dropped).appendTo(funnelStep);
+      $('<div class="converted"></div>').height(converted).appendTo(funnelStep);
+      adjustGraphHeight();
+    }
     
     // custom query
-      var params = {};
+    
+    function runQuery() {
+      var dateVal = $('#dates').val();
+      var params = {
+        'from_date': dateVal.from,
+        'to_date': dateVal.to,
+        'params': {}
+      };
       var script = "var event_list = ['homepage new', 'Viewed report', 'Funnel query'];" +
         "function main() {" +
             "return Events({})" +
@@ -104,6 +139,7 @@
       }).done(function(results) {
         $('p').text(JSON.stringify(results));
       });
+    }
     </script>
   </body>
 </html>
