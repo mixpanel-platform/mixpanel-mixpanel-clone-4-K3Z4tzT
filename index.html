@@ -7,11 +7,11 @@
     <script src="mixpanel-platform.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
-    
+    <div id="funnel"></div>
     <p></p>
     <script>
     // create funnel
-      var funnelGraph = 
+      var funnelGraph = $('#funnel');
       function addFunnelStep(eventName, converted, dropped) {
         var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
         $('<div class="dropped"></div>').height(dropped).appendTo(funnelStep);
