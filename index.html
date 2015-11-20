@@ -25,12 +25,11 @@
       margin-left: 55px;
       border-left: 1px solid #d4e0e8;
       border-radius: 0 5px 5px 0;
-      /*position: absolute;*/
       bottom: 0;
     }
     #graph-overlay {
       margin-left: 55px;
-      /*position: absolute;*/
+      position: absolute;
       bottom: 0;
     }
     .line {
@@ -49,8 +48,12 @@
     .converted {
       background-color: #65afe7;
     }
+    .converted.first {
+      border-radius: 5px 5px 0 0;
+    }
     .dropped {
       background-color: #e0e3ed;
+      border-radius: 5px 5px 0 0;
     }
     .column-label {
       bottom: -45px;
@@ -82,13 +85,13 @@
     var funnelGraph = $('#funnel');
     var ratio = calculateGraphRatio();
     function addFunnelStep(eventName, converted, dropped, first) {
-      var first = first || false;
-      if (first) {
+      var first = first ? 'first' : '';
+      if (first == 'first') {
         ratio = calculateGraphRatio(converted);
       }
       var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
       $('<div class="dropped"></div>').height(dropped*ratio).appendTo(funnelStep);
-      $('<div class="converted"></div>').height(converted*ratio).appendTo(funnelStep);
+      $('<div class="converted"></div>').height(converted*ratio).appendTo(funnelStep).addClass(first);
       $('<div class="column-label>' + eventName + '</div>').appendTo(funnelStep);
     }
     
