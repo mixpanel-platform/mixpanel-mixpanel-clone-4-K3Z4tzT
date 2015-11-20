@@ -24,6 +24,11 @@
       margin-left: 55px;
       border-left: 1px solid #d4e0e8;
       border-radius: 0 5px 5px 0;
+      position: absolute;
+    }
+    #graph-overlay {
+      position: absolute;
+      margin-left: 55px;
     }
     .line {
       border-top: 1px dashed #d2dfe7;
@@ -56,7 +61,9 @@
             <div class="line"></div>
             <div class="line"></div>
             <div class="line"></div>
-            <div class="line"></div>            
+            <div class="line"></div>
+          </div>
+          <div id="graph-overlay">
             <div id="funnel"></div>
           </div>
         </div>
@@ -67,14 +74,24 @@
     // create funnel
     $('#dates').MPDatepicker();
     var funnelGraph = $('#funnel');
-    function addFunnelStep(eventName, converted, dropped) {
+    var ratio = calculateGraphRatio();
+    function addFunnelStep(eventName, converted, dropped, first) {
+      var first = first || false;
+      if (first) {
+        ratio = calculateGraphRatio(converted);
+      }
       var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
-      $('<div class="dropped"></div>').height(dropped*10).appendTo(funnelStep);
-      $('<div class="converted"></div>').height(converted*10).appendTo(funnelStep);
-      // adjustGraphHeight();
+      $('<div class="dropped"></div>').height(dropped*ratio).appendTo(funnelStep);
+      $('<div class="converted"></div>').height(converted*ratio).appendTo(funnelStep);
     }
     
-    addFunnelStep('homepage new', 10, 0);
+    function calculateGraphRatio(count) {
+      var count = count || 1;
+      var total = $('#graph').height();
+      return total/count;
+    }
+    
+    addFunnelStep('homepage new', 10, 0, true);
     addFunnelStep('Viewed report', 7, 3);
     addFunnelStep('Billing - First Payment', 5, 2);
     
