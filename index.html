@@ -10,9 +10,8 @@
     <h1>Hello, World!</h1>
     <script>
     var params = {}
-      var script = "var event_list = ['homepage new', 'Viewed report', 'Funnel query'];" +
-        
-        "function main() {"
+      var script = "var event_list = ['homepage new', 'Viewed report', 'Funnel query'];"
++        "function main() {"
 +            "return Events({})"
 +            ".filter(function(event){ return event['user_id']>500000})"
             +".groupByUser(function(state, events) {"
@@ -84,7 +83,7 @@
 +                "}"
  +               "return solution;"
   +          "});"
-   +     "}"
+   +     "}";
       
       
       
