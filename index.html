@@ -4,11 +4,22 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/css/reset.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.css">
-    <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
+    <script src="mixpanel-platform.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
+    
     <p></p>
     <script>
+    // create funnel
+      var funnelGraph = 
+      function addFunnelStep(eventName, converted, dropped) {
+        var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
+        $('<div class="dropped"></div>').height(dropped).appendTo(funnelStep);
+        $('<div class="converted"></div>').height(converted).appendTo(funnelStep);
+        adjustGraphHeight();
+      }
+    
+    // custom query
       var params = {};
       var script = "var event_list = ['homepage new', 'Viewed report', 'Funnel query'];" +
         "function main() {" +
@@ -85,7 +96,7 @@
             "});"+
         "}";
       
-      MP.api.custom_query_v1(script, {
+      MP.api.custom_query(script, {
         'from_date': '2015-11-01',
         'to_date': '2015-11-19',
         'params': params
