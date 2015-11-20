@@ -68,8 +68,8 @@
     var funnelGraph = $('#funnel');
     function addFunnelStep(eventName, converted, dropped) {
       var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
-      $('<div class="dropped"></div>').height(dropped).appendTo(funnelStep);
-      $('<div class="converted"></div>').height(converted).appendTo(funnelStep);
+      $('<div class="dropped"></div>').height(dropped*10).appendTo(funnelStep);
+      $('<div class="converted"></div>').height(converted*10).appendTo(funnelStep);
       adjustGraphHeight();
     }
     
