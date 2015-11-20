@@ -13,7 +13,16 @@
       background-color: white;
       -webkit-border-radius: 5px;
       border-radius: 5px;
+      border: 1px solid #bfcfda;
       padding-top: 55px;
+    }
+    #axis {
+      width: 55px;
+      background-color: #fdfdfd;
+    }
+    #graph {
+      margin-left: 55px;
+      border-left: 1px solid #d4e0e8;
     }
     .line {
       border-top: 1px dashed #d2dfe7;
@@ -28,12 +37,15 @@
       <div id="dates"></div>
       <div id="funnel">
         <div id="background">
-          <div class="line"></div>
-          <div class="line"></div>
-          <div class="line"></div>
-          <div class="line"></div>
-          <div class="line"></div>
-          <div class="line"></div>
+          <div id="axis"></div>
+          <div id="graph">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>            
+          </div>
         </div>
       </div>
     </div>
