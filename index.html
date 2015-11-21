@@ -539,6 +539,9 @@ var results = [
         var events = Object.keys(cqResult);
         console.log(events);
         for (var i = 0; i < events.length; i++) {
+          console.log(i)
+          console.log(events[i])
+          console.log(cqResult[events[i]]);
           var first = i == 0 ? true : false;
           addFunnelStep(events[i], cqResult[events[i]].count, cqResult[events[i]].count-cqResult[events[i-1]].count, first);
         }
