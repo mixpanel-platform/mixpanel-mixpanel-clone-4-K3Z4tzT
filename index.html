@@ -10,7 +10,7 @@
   <body class="mixpanel-platform-body">
     <style>
     #report {
-      margin: 20px 0 60px;
+      margin: 20px 0 55px;
     }
     #background {
       background-color: #fdfdfd;
@@ -54,13 +54,14 @@
       background-color: #65afe7;
     }
     .converted.first {
-      border-radius: 5px 5px 0 0;
+      border-radius: 3px 3px 0 0;
     }
     .dropped {
       width: 60px;
       margin: 0 auto;
       background-color: #e0e3ed;
-      border-radius: 5px 5px 0 0;
+      border-radius: 3px 3px 0 0;
+      cursor: pointer;
     }
     .column-label {
       bottom: -45px;
@@ -77,6 +78,25 @@
       background-image: -webkit-linear-gradient(#f7f8fb,#f0f2f5);
       background-image: linear-gradient(#f7f8fb,#f0f2f5);
     }
+    
+    .flow {
+      display: none;
+    }
+    .header {
+      box-shadow: inset 0 1px #fff,0 1px 2px #fff;
+      border-radius: 5px 5px 0 0;
+      border: 1px solid #bfcfda;
+      background-color: #edeff5;
+      background-image: -webkit-linear-gradient(#f2f4f9,#e5e8ef);
+      background-image: linear-gradient(#f2f4f9,#e5e8ef);
+      padding: 0 18px;
+    }
+    #flow {
+      background-color: white;
+    }
+    
+    
+    
     </style>
     <div class="mixpanel-platform-section">
       <div id="dates"></div>
@@ -97,12 +117,18 @@
         </div>
       </div>
     </div>
+    <div class="mixpanel-platform-section flow">
+      <div class="header"></div>
+      <div id="flow"></div>
+    </div>
     <p></p>
     <script>
+    
     // create funnel
     $('#dates').MPDatepicker();
     var funnelGraph = $('#funnel');
     var ratio = calculateGraphRatio();
+    
     function addFunnelStep(eventName, converted, dropped, first) {
       var first = first ? 'first' : '';
       if (first == 'first') {
@@ -120,9 +146,174 @@
       return total/count;
     }
     
-    addFunnelStep('homepage new', 10, 0, true);
-    addFunnelStep('Viewed report', 7, 3);
-    addFunnelStep('Billing - First Payment', 5, 2);
+    // addFunnelStep('homepage new', 10, 0, true);
+    // addFunnelStep('Viewed report', 7, 3);
+    // addFunnelStep('Billing - First Payment', 5, 2);
+    
+    // dropoff flows
+    $('#funnel').on('click', '.dropped', function() {
+      var event = $(this).parents('.funnel-step').find('.column-label').text();
+      showFlow(event);
+    });
+    
+    function showFlow(event) {
+      var flow = $('.flow').show();
+      flow.find('.header').text(event + ' Alternative Paths');
+      mapFlow(cqResult[event].flows);
+    }
+    
+    function mapFlow(flows) {
+      MP.api.MAX_SIMULTANEOUS_QUERIES = 30
+      var datesSelector = $('#dateSelect').MPDatepicker();
+      var rootEventSelect = $('#eventSelect').MPEventSelect();
+      /* Global Event List */
+      var rootEvent;
+      var objs = {};
+      var graphData = {}
+      
+      var width = 960;
+      var height = 750;
+      var cluster = d3.layout.cluster()
+        .size([height, width - 160]);
+      var diagonal = d3.svg.diagonal()
+        .projection(function(d) { return [d.y, d.x]; });
+  
+      var svg = d3.select("#flow").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        // .call(d3.behavior.zoom().on("zoom", function () {
+        //         svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+        //       })
+        //     )
+        .append("g")
+        .attr("transform", "translate(40,0)");
+  
+      function addNode(data){
+  
+        d3.selectAll(".text").remove();
+        d3.selectAll(".node").remove();
+        d3.selectAll(".link").remove();
+  
+        var nodes = cluster.nodes(data),
+          links = cluster.links(nodes);
+  
+        nodes.forEach(function(d) { d.y = d.depth * 180; });
+  
+        var allLinks = svg.selectAll(".link").data(links);
+        var link = allLinks.enter().append("path")
+          .attr("class", "link")
+          .style('stroke-width', function(d) {
+            return ( d.target.root * .2 );
+          });
+  
+        allLinks.transition().duration(1000).attr("d", diagonal);
+  
+        var allNodes = svg.selectAll(".node").data(nodes);
+        var node = allNodes.enter().append("g")
+          .attr("class", "node")
+          .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+          // .on('mouseover', function(d){
+          //     d3.select(this).style('opacity', 1.0)
+          //     d3.select("text").style('opacity', 1.0);
+          // })
+          // .on('mouseout', function(d){
+          //   d3.select(this).style('opacity', 0.6)
+          // })
+          .on('click', function(val){
+              console.log (val)
+              if (val.children) {
+                val._children = val.children;
+                val.children = null;
+                addNode(graphData)
+              } else if (val._children) {
+                val.children = val._children;
+                addNode(graphData);
+              } else {
+                val._children = true ;
+                nodeQuery(objs, val);
+              }
+          });
+  
+        node.append('svg:title')
+          .text(function(d) {
+            var count = 'Count: ' + String(d.count) + '\n';
+            return count + parent + root;
+          });
+        node.append("circle")
+          .attr("r", 6.5);
+  
+        node.append("text")
+          .attr("dx", function(d) { return d.children ? 0 : 8; })
+          .attr("dy", function(d) { return d.children ? 18 : 3; })
+          .text(function(d) { return d.name; })
+          .attr("text-anchor", function(d){
+            return ( d.children ? "middle" : undefined );
+          });
+      };
+  
+      /* Let the Funnel Queries Begin... */
+  
+      var nodeQuery = function(event_list, node){
+        /* Dict with top counts for each event */
+        var nodes = {};
+
+        _.each(_.keys(event_list), function(key) {
+          var event = event_list[key];
+          var parent = node;
+          var selector_str;
+          var events = [];
+          while (parent){
+            events.push({'event': event});
+            event = parent.name
+            parent = parent.parent
+          }
+          events.push({'event': event});
+          events.reverse();
+          events.push(params);
+        });
+
+        /* Add Data to Graph Data */
+        var total = _.values(nodes).reduce(function(a , b){return a + b;});
+  
+        _.each(_.keys(nodes), function(key){
+          /*
+            Build a node object with the conversion percentage and other meta data and add it to the children
+            of the parent node
+          */
+          if (node.children) {
+              node.children.push({
+                'name':key,
+                'count':nodes[key]
+              });
+          } else {
+              node.children = [{
+                'name':key,
+                'count':nodes[key]
+              }];
+          }
+        });
+        addNode(graphData);
+      }
+        /* This Event Represents the Origin of the User Flow Diagram. */
+        
+        graphData = {
+          'name': rootEvent,
+        };
+
+        /* Funnel Queries */
+        $.when(topEvents).done(function(events){
+            objs = events.values();
+        });
+        /* Find the Root Event Count */
+        var rootEventCount = MP.api.segment(rootEvent,rootParams);
+        
+        $.when(rootEventCount).done(function(eventCount){
+            graphData.count = eventCount.sum().values()[rootEvent];
+            addNode(graphData);
+        });
+      });
+
+    }
     
     // custom query
     function runQuery() {
@@ -212,8 +403,266 @@
         'to_date': '2015-11-19',
         'params': params
       }).done(function(results) {
-        $('p').text(JSON.stringify(results));
       });
+var results = [
+  {
+    "homepage new": {
+      "count": 11,
+      "flows": {
+        "homepage new": {
+          "count": 11,
+          "next": {
+            "Viewed login page": {
+              "count": 1,
+              "next": {}
+            },
+            "homepage lessons learned hovered": {
+              "count": 3,
+              "next": {
+                "Landing: Segmentation": {
+                  "count": 1,
+                  "next": {}
+                },
+                "jobs": {
+                  "count": 1,
+                  "next": {}
+                },
+                "homepage lessons learned hovered": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            },
+            "homepage hero scrolled": {
+              "count": 1,
+              "next": {
+                "homepage hero scrolled": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            },
+            "Landing: Segmentation": {
+              "count": 1,
+              "next": {
+                "homepage new": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            },
+            "homepage new": {
+              "count": 1,
+              "next": {
+                "View pricing page": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            },
+            "View pricing page": {
+              "count": 2,
+              "next": {}
+            }
+          }
+        }
+      }
+    },
+    "Viewed report": {
+      "count": 26,
+      "flows": {
+        "Viewed report": {
+          "count": 10,
+          "next": {
+            "Retention query": {
+              "count": 2,
+              "next": {
+                "Retention query": {
+                  "count": 2,
+                  "next": {}
+                }
+              }
+            },
+            "Viewed report": {
+              "count": 4,
+              "next": {
+                "Tutorial Shown": {
+                  "count": 1,
+                  "next": {}
+                },
+                "Viewed report": {
+                  "count": 1,
+                  "next": {}
+                },
+                "Mixpanel Segmentation": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            },
+            "Tutorial Shown": {
+              "count": 2,
+              "next": {
+                "Tutorial Banner Shown": {
+                  "count": 2,
+                  "next": {}
+                }
+              }
+            },
+            "clicked logout link": {
+              "count": 1,
+              "next": {
+                "Viewed login page": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            },
+            "MPPlatform: intro modal viewed": {
+              "count": 1,
+              "next": {
+                "Viewed report": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            }
+          }
+        },
+        "Mixpanel Segmentation": {
+          "count": 4,
+          "next": {
+            "Viewed report": {
+              "count": 1,
+              "next": {
+                "Viewed report": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            },
+            "Segmentation query": {
+              "count": 1,
+              "next": {
+                "Viewed report": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            },
+            "Tutorial Shown": {
+              "count": 2,
+              "next": {
+                "Tutorial Banner Shown": {
+                  "count": 2,
+                  "next": {}
+                }
+              }
+            }
+          }
+        },
+        "Segmentation query": {
+          "count": 2,
+          "next": {
+            "MPPlatform: custom report dropdown viewed": {
+              "count": 1,
+              "next": {
+                "Segmentation query": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            },
+            "Segmentation query": {
+              "count": 1,
+              "next": {
+                "Segmentation query": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            }
+          }
+        },
+        "Done": {
+          "count": 1,
+          "next": {
+            "Viewed report": {
+              "count": 1,
+              "next": {
+                "Done": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            }
+          }
+        },
+        "View pricing page": {
+          "count": 1,
+          "next": {
+            "Viewed report": {
+              "count": 1,
+              "next": {
+                "clicked logout link": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            }
+          }
+        },
+        "Tutorial Banner Shown": {
+          "count": 1,
+          "next": {
+            "Tutorial Shown": {
+              "count": 1,
+              "next": {
+                "Tutorial Banner Shown": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            }
+          }
+        },
+        "Tutorial Shown": {
+          "count": 6,
+          "next": {
+            "Tutorial Banner Shown": {
+              "count": 6,
+              "next": {
+                "Viewed report": {
+                  "count": 3,
+                  "next": {}
+                },
+                "Segmentation query": {
+                  "count": 2,
+                  "next": {}
+                },
+                "Tutorial Shown": {
+                  "count": 1,
+                  "next": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Funnel query": {
+      "count": 11,
+      "flows": {}
+    }
+  }
+]
+        cqResult = results[0];
+        var events = Object.keys(cqResult);
+        for (var i = 0; i < events.length; i++) {
+          var first = i == 0 ? true : false;
+          addFunnelStep(events[i], events[i][event].count, events[i][event].count-events[i-1][event].count, first);
+        }
+      // });
     }
     </script>
   </body>
