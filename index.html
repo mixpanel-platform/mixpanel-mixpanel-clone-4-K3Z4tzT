@@ -538,7 +538,7 @@ var results = [
         var events = Object.keys(cqResult);
         for (var i = 0; i < events.length; i++) {
           var first = i == 0 ? true : false;
-          addFunnelStep(events[i], caResult[events[i]].count, caResult[events[i]].count-caResult[events[i-1]].count, first);
+          addFunnelStep(events[i], cqResult[events[i]].count, cqResult[events[i]].count-cqResult[events[i-1]].count, first);
         }
       // });
     }
