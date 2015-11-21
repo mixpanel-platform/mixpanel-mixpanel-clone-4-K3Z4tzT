@@ -163,155 +163,28 @@
     }
     
     function mapFlow(flows) {
-      MP.api.MAX_SIMULTANEOUS_QUERIES = 30
-      var datesSelector = $('#dateSelect').MPDatepicker();
-      var rootEventSelect = $('#eventSelect').MPEventSelect();
-      /* Global Event List */
-      var rootEvent;
-      var objs = {};
-      var graphData = {}
-      
-      var width = 960;
-      var height = 750;
-      var cluster = d3.layout.cluster()
-        .size([height, width - 160]);
-      var diagonal = d3.svg.diagonal()
-        .projection(function(d) { return [d.y, d.x]; });
-  
-      var svg = d3.select("#flow").append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        // .call(d3.behavior.zoom().on("zoom", function () {
-        //         svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
-        //       })
-        //     )
-        .append("g")
-        .attr("transform", "translate(40,0)");
-  
-      function addNode(data){
-  
-        d3.selectAll(".text").remove();
-        d3.selectAll(".node").remove();
-        d3.selectAll(".link").remove();
-  
-        var nodes = cluster.nodes(data),
-          links = cluster.links(nodes);
-  
-        nodes.forEach(function(d) { d.y = d.depth * 180; });
-  
-        var allLinks = svg.selectAll(".link").data(links);
-        var link = allLinks.enter().append("path")
-          .attr("class", "link")
-          .style('stroke-width', function(d) {
-            return ( d.target.root * .2 );
-          });
-  
-        allLinks.transition().duration(1000).attr("d", diagonal);
-  
-        var allNodes = svg.selectAll(".node").data(nodes);
-        var node = allNodes.enter().append("g")
-          .attr("class", "node")
-          .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
-          // .on('mouseover', function(d){
-          //     d3.select(this).style('opacity', 1.0)
-          //     d3.select("text").style('opacity', 1.0);
-          // })
-          // .on('mouseout', function(d){
-          //   d3.select(this).style('opacity', 0.6)
-          // })
-          .on('click', function(val){
-              console.log (val)
-              if (val.children) {
-                val._children = val.children;
-                val.children = null;
-                addNode(graphData)
-              } else if (val._children) {
-                val.children = val._children;
-                addNode(graphData);
-              } else {
-                val._children = true ;
-                nodeQuery(objs, val);
-              }
-          });
-  
-        node.append('svg:title')
-          .text(function(d) {
-            var count = 'Count: ' + String(d.count) + '\n';
-            return count + parent + root;
-          });
-        node.append("circle")
-          .attr("r", 6.5);
-  
-        node.append("text")
-          .attr("dx", function(d) { return d.children ? 0 : 8; })
-          .attr("dy", function(d) { return d.children ? 18 : 3; })
-          .text(function(d) { return d.name; })
-          .attr("text-anchor", function(d){
-            return ( d.children ? "middle" : undefined );
-          });
-      };
-  
-      /* Let the Funnel Queries Begin... */
-  
-      var nodeQuery = function(event_list, node){
-        /* Dict with top counts for each event */
-        var nodes = {};
-
-        _.each(_.keys(event_list), function(key) {
-          var event = event_list[key];
-          var parent = node;
-          var selector_str;
-          var events = [];
-          while (parent){
-            events.push({'event': event});
-            event = parent.name
-            parent = parent.parent
-          }
-          events.push({'event': event});
-          events.reverse();
-          events.push(params);
-        });
-
-        /* Add Data to Graph Data */
-        var total = _.values(nodes).reduce(function(a , b){return a + b;});
-  
-        _.each(_.keys(nodes), function(key){
-          /*
-            Build a node object with the conversion percentage and other meta data and add it to the children
-            of the parent node
-          */
-          if (node.children) {
-              node.children.push({
-                'name':key,
-                'count':nodes[key]
-              });
-          } else {
-              node.children = [{
-                'name':key,
-                'count':nodes[key]
-              }];
-          }
-        });
-        addNode(graphData);
+      var root = Object.keys(flows);
+      flowObject = {
+        'name': root,
+        'count': flows[root].count,
+        'children': []
       }
-        /* This Event Represents the Origin of the User Flow Diagram. */
-        
-        graphData = {
-          'name': rootEvent,
-        };
-
-        /* Funnel Queries */
-        $.when(topEvents).done(function(events){
-            objs = events.values();
-        });
-        /* Find the Root Event Count */
-        var rootEventCount = MP.api.segment(rootEvent,rootParams);
-        
-        $.when(rootEventCount).done(function(eventCount){
-            graphData.count = eventCount.sum().values()[rootEvent];
-            addNode(graphData);
-        });
-
+      _.each(_.keys(flows[root].next), function(event) {
+        getChildren(event, flowObject);
+      });
+      console.log(flowObject);
+    }
+    
+    function getChildren(parent, prevParent) {
+      var eventObject = {'name': parent, 'count': parent.count, 'parent': prevParent, 'children': []};
+      if ($.isEmptyObject(next) === false) {
+        for (var event in next) {
+          var newChildren = getChildren(event, parent);
+          var child = {'name': event, 'count': event.count, 'parent': parent, 'children': newChildren};
+          eventObject.children.push(child);
+        }
+      }
+      prevParent.children.push(eventObject);
     }
     
     // custom query
@@ -397,12 +270,15 @@
             "});"+
         "}";
       
-      MP.api.custom_query(script, {
-        'from_date': '2015-11-01',
-        'to_date': '2015-11-19',
-        'params': params
-      }).done(function(results) {
-      });
+      // MP.api.custom_query(script, {
+      //   'from_date': '2015-11-01',
+      //   'to_date': '2015-11-19',
+      //   'params': params
+      // }).done(function(results) {
+      // });
+      
+      
+
 var results = [
   {
     "homepage new": {
