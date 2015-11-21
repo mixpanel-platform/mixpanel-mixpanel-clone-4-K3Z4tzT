@@ -125,15 +125,17 @@
     <script>
     
     // runQuery
-    runQuery();
-    
+    $(document).ready(function() {
+      runQuery();
+    })
+
     // create funnel
     $('#dates').MPDatepicker();
     var funnelGraph = $('#funnel');
     var ratio = calculateGraphRatio();
     
     function addFunnelStep(eventName, converted, dropped, first) {
-      console.log('addingjQuery17108247417157981545_1448009513735?')
+      console.log('addingjQuery1710554227453423664_1448134645177?')
       var first = first ? 'first' : '';
       if (first == 'first') {
         ratio = calculateGraphRatio(converted);
