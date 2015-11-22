@@ -233,6 +233,7 @@
     <p></p>
     <script>
       var event_list = $('#event_list').val().split(', ');
+      var funnel_select = [];
 
       // runQuery
       $(document).ready(function() {
@@ -508,8 +509,6 @@
         });
       }
 
-      var funnel_select = [];
-      
       // Toggle children on click.
       function click(d) {
         if (d.selected) {
