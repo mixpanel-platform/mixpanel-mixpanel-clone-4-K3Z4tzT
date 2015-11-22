@@ -508,6 +508,7 @@
           d._children = d.children;
           d.children = null;
           d.selected = false;
+          // funnel_select.pop(d);
         } else {
           d.children = d._children;
           d._children = null;
@@ -516,16 +517,21 @@
         update(d);
       }
       
+      var funnel_select;
+      
       // Find selected nodes on funnel query click
       function getFlowSteps() {
         var nodes = $('g');
         nodes.forEach(function(d) {
-          return d.selected;
+          if (d.selected) {
+            funnel_select.push(d.name);
+          };
         });
+        console.log(funnel_select);
       }
       
       $('#funnel-query').on('click', function() {
-        var steps = getFlowPath();
+        getFlowPath();
         console.log(steps);
         // $('#event_list').val(steps);
         // runQuery();
