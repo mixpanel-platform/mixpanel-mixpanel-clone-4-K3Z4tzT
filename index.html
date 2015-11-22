@@ -263,13 +263,12 @@
         
         MP.api.custom_query(script, params).done(function(results) {
           cqResult = results[0];
-          var events = Object.keys(cqResult);
-          for (var i = 0; i < events.length; i++) {
+          for (var i = 0; i < event_list.length; i++) {
             var first = i == 0 ? true : false;
             if (first) {
-              addFunnelStep(events[i], cqResult[events[i]].total, 0, first);
+              addFunnelStep(event_list[i], cqResult[event_list[i]].total, 0, first);
             } else {
-              addFunnelStep(events[i], cqResult[events[i]].total, cqResult[events[i-1]].total-cqResult[events[i]].total, first);
+              addFunnelStep(event_list[i], cqResult[event_list[i]].total, cqResult[event_list[i-1]].total-cqResult[event_list[i]].total, first);
             }
           }
         });
