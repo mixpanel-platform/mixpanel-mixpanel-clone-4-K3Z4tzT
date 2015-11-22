@@ -527,7 +527,7 @@
       
       // Find selected nodes on funnel query click
       function getFlowSteps() {
-        var nodes = d3.select('g');
+        var nodes = d3.select('g.node');
         nodes.forEach(function(d) {
           if (d.selected) {
             funnel_select.push(d.name);
