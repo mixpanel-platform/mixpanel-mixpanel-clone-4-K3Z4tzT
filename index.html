@@ -36,6 +36,7 @@
         margin: 0 0 10px 0;
         padding: 5px;
         border: 1px solid #bdc7d2;
+        -webkit-border-radius: 3px;
         border-radius: 3px;
         position: relative;
         -webkit-appearance: textfield;
@@ -67,6 +68,7 @@
         background-color: white;
         margin-left: 55px;
         border-left: 1px solid #d4e0e8;
+        -webkit-border-radius: 0 5px 5px 0;
         border-radius: 0 5px 5px 0;
         bottom: 0;
         position: relative;
@@ -104,12 +106,14 @@
         background-color: #65afe7;
       }
       .converted.first {
+        -webkit-border-radius: 3px 3px 0 0;
         border-radius: 3px 3px 0 0;
       }
       .dropped {
         width: 60px;
         margin: 0 auto;
         background-color: #e0e3ed;
+        -webkit-border-radius: 3px 3px 0 0;
         border-radius: 3px 3px 0 0;
         cursor: pointer;
       }
@@ -129,6 +133,7 @@
         margin-bottom: 0;
         padding: 7px 14px;
         border: 1px solid #c4c9d8;
+        -webkit-border-radius: 50px;
         border-radius: 50px;
         box-shadow: inset 0 1px #fff,0 1px 3px rgba(0,0,0,0.1);
         background-color: #f4f6f9;
@@ -147,6 +152,9 @@
       }
       #flow {
         background-color: white;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        border: 1px solid #bfcfda;
       }
 
       .node {
@@ -218,7 +226,7 @@
       function runQuery() {
         // clear previous query
         $('#funnel').html('');
-        // $('#flow svg').html('');
+        $('.flow').hide();
 
         // set up parameters
         event_list = $('#event_list').val().split(', ');
