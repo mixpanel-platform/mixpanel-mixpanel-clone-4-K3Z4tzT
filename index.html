@@ -235,11 +235,6 @@
         });
       }
 
-      // runQuery
-      $(document).ready(function() {
-        runQuery();
-      })
-
       // create funnel
       $('#dates').MPDatepicker();
       var funnelGraph = $('#funnel');
@@ -466,6 +461,14 @@
         }
         update(d);
       }
+
+      // runQuery
+      $(document).ready(function() {
+        runQuery();
+      });
+      $('#dates').on('change', function() {
+        runQuery();
+      });
 
     </script>
   </body>
