@@ -22,7 +22,7 @@
       #event_list {
         display: inline-block;
       }
-      #run {
+      #run, #funnel-query {
         clear:both;
         vertical-align: 1px;
         margin-left: 10px;
@@ -226,7 +226,9 @@
     </div>
     <div class="mixpanel-platform-section flow">
       <div class="header"></div>
-      <div id="flow"></div>
+      <div id="flow">
+        <div id="funnel-query"></div>
+      </div>
     </div>
     <p></p>
     <script>
@@ -389,7 +391,7 @@
       }
 
       // d3 tree flow
-      var margin = {top: 20, right: 120, bottom: 20, left: 40},
+      var margin = {top: 20, right: 40, bottom: 20, left: 40},
           width = 960 - margin.right - margin.left,
           height = 800 - margin.top - margin.bottom;
 
@@ -513,7 +515,21 @@
         }
         update(d);
       }
-
+      
+      // Find selected nodes on funnel query click
+      function getFlowSteps() {
+        var nodes = tree.nodes(treeRoot).reverse();
+        nodes.forEach(function(d) {
+          return d.selected;
+        });
+      }
+      
+      $('#funnel-query').on('click', function() {
+        var steps = getFlowPath();
+        console.log(steps);
+        // $('#event_list').val(steps);
+        // runQuery();
+      });
     </script>
   </body>
 </html>
