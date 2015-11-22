@@ -451,7 +451,7 @@
 
         nodeUpdate.select("text")
             .style("fill-opacity", 1)
-            .style("font-weight", function(d) {return d._children ? "normal" : "bold"; });
+            .style("font-weight", function(d) {return d.children ? "normal" : "bold"; });
 
         // Transition exiting nodes to the parent's new position.
         var nodeExit = node.exit().transition()
