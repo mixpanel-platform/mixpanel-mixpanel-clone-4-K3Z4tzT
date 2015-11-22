@@ -4,105 +4,182 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/css/reset.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.css">
+    <script src="https://d3js.org/d3.v3.min.js"></script>
     <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
     <script src="mixpanel-platform.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
     <style>
-    #report {
-      margin: 20px 0 55px;
+      body {
+        color: #5c617b;
+      }
+      .events_label {
+        font-weight: bold;
+        font-size: 15px;
+        margin-right: 8px;
+        display: inline-block;
+      }
+      #event_list {
+        display: inline-block;
+      }
+      #dates {
+        float: right;
+      }
+      input {
+        font-family:  system, -apple-system, ".SFNSDisplay-Regular", "Helvetica Neue", sans-serif;
+        font-weight: normal;
+        letter-spacing: 0.03em;
+        font-size: 13px;
+        color: #747d94;
+        height: 20px;
+        width: 355px;
+        margin: 0 0 10px 0;
+        padding: 5px;
+        border: 1px solid #bdc7d2;
+        border-radius: 3px;
+        position: relative;
+        -webkit-appearance: textfield;
+        background-color: white;
+      }
+      input:focus, input:hover {
+        outline: 0;
+        border-color: #5ba7e1;
+      }
+      #report {
+        margin: 20px 0 55px;
+      }
+      #background {
+        background-color: #fdfdfd;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        border: 1px solid #bfcfda;
+        position: relative;
+      }
+      #axis, #graph {
+        padding-top: 55px;
+      }
+      #axis {
+        width: 55px;
+        position: absolute;
+        text-align: right;
+      }
+      #graph {
+        background-color: white;
+        margin-left: 55px;
+        border-left: 1px solid #d4e0e8;
+        border-radius: 0 5px 5px 0;
+        bottom: 0;
+        position: relative;
+      }
+      #graph-overlay {
+        margin-left: 55px;
+        position: absolute;
+        bottom: -51px;
+      }
+      .line, .label {
+        height: 55px;
+      }
+      .label {
+        padding-right: 10px;
+      }
+      .line {
+        border-top: 1px dashed #d2dfe7;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      .funnel-step {
+        margin: 0 35px;
+        width: 100px;
+        display: inline-block;
+      }
+      .converted, .dropped {
+        text-align: center;
+        font-weight: bold;
+      }
+      .converted {
+        width: 60px;
+        margin: 0 auto;
+        background-color: #65afe7;
+      }
+      .converted.first {
+        border-radius: 3px 3px 0 0;
+      }
+      .dropped {
+        width: 60px;
+        margin: 0 auto;
+        background-color: #e0e3ed;
+        border-radius: 3px 3px 0 0;
+        cursor: pointer;
+      }
+      .column-label {
+        margin-bottom: 8px;
+        margin-top: 23px;
+        text-align: center;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .column-label.active {
+        margin-top: 15px;
+        margin-bottom: 0;
+        padding: 7px 14px;
+        border: 1px solid #c4c9d8;
+        border-radius: 50px;
+        box-shadow: inset 0 1px #fff,0 1px 3px rgba(0,0,0,0.1);
+        background-color: #f4f6f9;
+        background-image: -webkit-linear-gradient(#f7f8fb,#f0f2f5);
+        background-image: linear-gradient(#f7f8fb,#f0f2f5);
+      }
+      
+      .flow {
+        display: none;
+      }
+      .header {
+        padding: 10px 0;
+        font-size: 15px;
+        font-weight: bold;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+      }
+      #flow {
+        background-color: white;
+      }
+
+      .node {
+        cursor: pointer;
+      }
+      .node circle {
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+      }
+      .node text {
+        font: 10px sans-serif;
+      }
+      .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1.5px;
     }
-    #background {
-      background-color: #fdfdfd;
-      -webkit-border-radius: 5px;
-      border-radius: 5px;
-      border: 1px solid #bfcfda;
-      position: relative;
-    }
-    #axis {
-      width: 55px;
-    }
-    #graph {
-      padding-top: 55px;
-      background-color: white;
-      margin-left: 55px;
-      border-left: 1px solid #d4e0e8;
-      border-radius: 0 5px 5px 0;
-      bottom: 0;
-    }
-    #graph-overlay {
-      margin-left: 55px;
-      position: absolute;
-      bottom: -51px;
-    }
-    .line {
-      border-top: 1px dashed #d2dfe7;
-      height: 55px;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-    .funnel-step {
-      margin: 0 35px;
-      width: 100px;
-      display: inline-block;
-    }
-    .converted {
-      width: 60px;
-      margin: 0 auto;
-      background-color: #65afe7;
-    }
-    .converted.first {
-      border-radius: 3px 3px 0 0;
-    }
-    .dropped {
-      width: 60px;
-      margin: 0 auto;
-      background-color: #e0e3ed;
-      border-radius: 3px 3px 0 0;
-      cursor: pointer;
-    }
-    .column-label {
-      bottom: -45px;
-      margin-top: 15px;
-      text-align: center;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      padding: 7px 14px;
-      border: 1px solid #c4c9d8;
-      border-radius: 50px;
-      box-shadow: inset 0 1px #fff,0 1px 3px rgba(0,0,0,0.1);
-      background-color: #f4f6f9;
-      background-image: -webkit-linear-gradient(#f7f8fb,#f0f2f5);
-      background-image: linear-gradient(#f7f8fb,#f0f2f5);
-    }
-    
-    .flow {
-      display: none;
-    }
-    .header {
-      box-shadow: inset 0 1px #fff,0 1px 2px #fff;
-      border-radius: 5px 5px 0 0;
-      border: 1px solid #bfcfda;
-      background-color: #edeff5;
-      background-image: -webkit-linear-gradient(#f2f4f9,#e5e8ef);
-      background-image: linear-gradient(#f2f4f9,#e5e8ef);
-      padding: 0 18px;
-    }
-    #flow {
-      background-color: white;
-    }
-    
-    
-    
     </style>
+
     <div class="mixpanel-platform-section">
       <div id="dates"></div>
+      <div class="events">
+        <div class="events_label">Funnel Steps:</div>
+        <input id="event_list" value="homepage new, Viewed report, Funnel query">
+      </div>
       <div id="report">
         <div id="background">
-          <div id="axis"></div>
+          <div id="axis">
+            <div class="label"></div>
+            <div class="label"></div>
+            <div class="label"></div>
+            <div class="label"></div>
+            <div class="label"></div>
+            <div class="label"></div>
+          </div>
           <div id="graph">
             <div class="line"></div>
             <div class="line"></div>
@@ -123,432 +200,270 @@
     </div>
     <p></p>
     <script>
-    
-    // runQuery
-    $(document).ready(function() {
-      runQuery();
-    })
+      var event_list = $('#event_list').val();
+      var event_list = event_list.split(', ');
 
-    // create funnel
-    $('#dates').MPDatepicker();
-    var funnelGraph = $('#funnel');
-    var ratio = calculateGraphRatio();
-    
-    function addFunnelStep(eventName, converted, dropped, first) {
-      console.log('addingjQuery1710554227453423664_1448134645177?')
-      var first = first ? 'first' : '';
-      if (first == 'first') {
-        ratio = calculateGraphRatio(converted);
+      function date_to_string(d) {
+          return d.toISOString().split('T')[0];
       }
-      var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
-      $('<div class="dropped"></div>').height(dropped*ratio).appendTo(funnelStep);
-      $('<div class="converted"></div>').height(converted*ratio).appendTo(funnelStep).addClass(first);
-      $('<div class="column-label">' + eventName + '</div>').appendTo(funnelStep);
-    }
-    
-    function calculateGraphRatio(count) {
-      var count = count || 1;
-      var total = $('#graph').height();
-      return total/count;
-    }
-    
-    // addFunnelStep('homepage new', 10, 0, true);
-    // addFunnelStep('Viewed report', 7, 3);
-    // addFunnelStep('Billing - First Payment', 5, 2);
-    
-    // dropoff flows
-    $('#funnel').on('click', '.dropped', function() {
-      var event = $(this).parents('.funnel-step').find('.column-label').text();
-      showFlow(event);
-    });
-    
-    function showFlow(event) {
-      var flow = $('.flow').show();
-      flow.find('.header').text(event + ' Alternative Paths');
-      mapFlow(cqResult[event].flows);
-    }
-    
-    function mapFlow(flows) {
-      var root = Object.keys(flows);
-      flowObject = {
-        'name': root,
-        'count': flows[root].count,
-        'children': []
+      
+      // custom query
+      MP.api.setCredentials('e9eb40d73246d38af2e3a425761a73b4', '0d4eaad557622208b4dcdcb1d035aecf');
+      function runQuery() {
+        var dateVal = $('#dates').val();
+        var params = {
+          'from_date': date_to_string(dateVal.from),
+          'to_date': date_to_string(dateVal.to),
+          'params': '{}'
+        };
+        var script = 'function main(){return Events({}).groupByUser(function(e,t){e=e||{event_path:[],funnel_step:0};for(var n=0;n<t.length;++n)(0===e.event_path.length&&t[n].name==event_list[0]||e.event_path.length>0)&&(e.event_path.push(t[n].name),e.funnel_step=1);return e}).filter(function(e){return e.value&&e.value.funnel_step>0}).reduce(function(e,t){for(var n=[],a=0;a<t.length;a++)n[a]={funnel_step:t[a].value.funnel_step,dropoff_path:[]},_.each(event_list.slice(1),function(e,r){var l=t[a].value.event_path.indexOf(e);l>-1?(t[a].value.event_path.splice(0,l+1),n[a].funnel_step++):(t[a].value.event_path.splice(3,t[a].value.event_path.length),n[a].dropoff_path=t[a].value.event_path)}),n[a].funnel_step=event_list[n[a].funnel_step-1];for(var r=0;r<e.length;r++){var l=e[r];_.each(l,function(e){n.push(e)})}return n}).reduce(function(e,t){for(var n={},a=0;a<t.length;a++)for(var r=0;r<t[a].length;r++){var l=t[a][r].funnel_step,u=t[a][r].dropoff_path;n[l]=n[l]||{count:0,all_paths:[]},n[l].count++,n[l].all_paths.push(u)}return n}).reduce(function(e,t){for(var n={},a=0,r=0;r<t.length;r++)for(var l=event_list.length-1;l>=0;l--){var u=event_list[l],v=t[r][u].count;a+=v,n[u]=n[u]||{total:a,flows:{}};for(var f in t[r][u].all_paths){var p=n[u].flows;for(var o in t[r][u].all_paths[f]){var _=t[r][u].all_paths[f][o];p[_]=p[_]||{count:0,next:{}},p[_].count++,p=p[_].next}}}return n})}var event_list=' + JSON.stringify(event_list) + ';'
+        
+        MP.api.custom_query(script, params).done(function(results) {
+          cqResult = results[0];
+          var events = Object.keys(cqResult);
+          for (var i = 0; i < events.length; i++) {
+            var first = i == 0 ? true : false;
+            if (first) {
+              addFunnelStep(events[i], cqResult[events[i]].total, 0, first);
+            } else {
+              addFunnelStep(events[i], cqResult[events[i]].total, cqResult[events[i-1]].total-cqResult[events[i]].total, first);
+            }
+          }
+        });
       }
-      _.each(_.keys(flows[root].next), function(event) {
-        getChildren(event, flowObject);
+
+      // runQuery
+      $(document).ready(function() {
+        runQuery();
+      })
+
+      // create funnel
+      $('#dates').MPDatepicker();
+      var funnelGraph = $('#funnel');
+      var ratio = calculateGraphRatio();
+      
+      function addFunnelStep(eventName, converted, dropped, first) {
+        var first = first ? 'first' : '';
+        // set graph height ratio and y-axis labels
+        if (first == 'first') {
+          ratio = calculateGraphRatio(converted);
+          var increment = converted / 6;
+          for (var i = 1; i <=6; i++) {
+            $('.label:nth-child(' + i + ')').text(kFormatter(converted - ((i-1) * increment)));
+          }
+        }
+        var dropped = first ? '' : dropped;
+        var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
+        $('<div class="dropped">' + dropped + '</div>').css({'height': dropped*ratio + 'px', 'line-height': dropped*ratio + 'px'}).appendTo(funnelStep);
+        $('<div class="converted">' + converted + '</div>').css({'height': converted*ratio + 'px', 'line-height': converted*ratio + 'px'}).appendTo(funnelStep).addClass(first);
+        $('<div class="column-label">' + eventName + '</div>').appendTo(funnelStep);
+      }
+      
+      function calculateGraphRatio(count) {
+        var count = count || 1;
+        var total = $('#graph').height();
+        return total/count;
+      }
+
+      function calculateFlowLine(count) {
+        var count = count || 1;
+        return 10/count;
+      }
+
+      function kFormatter(num) {
+        return num > 999 ? (num/1000).toFixed(1) + 'K' : Math.floor(num);
+      }
+      
+      // dropoff flows
+      $('#funnel').on('click', '.dropped', function() {
+        // make any previously selected events inactive
+        $('.column-label').removeClass('active');
+        // make current selection active
+        var label = $(this).parents('.funnel-step').find('.column-label');
+        label.addClass('active');
+        var event = label.text();
+        var index = event_list.indexOf(event) - 1;
+        showFlow(event_list[index]);
       });
-      console.log(flowObject);
-    }
-    
-    function getChildren(parent, prevParent) {
-      var eventObject = {'name': parent, 'count': parent.count, 'parent': prevParent, 'children': []};
-      if ($.isEmptyObject(next) === false) {
-        for (var event in next) {
-          var newChildren = getChildren(event, parent);
-          var child = {'name': event, 'count': event.count, 'parent': parent, 'children': newChildren};
-          eventObject.children.push(child);
-        }
+      
+      function showFlow(event) {
+        var flow = $('.flow').show();
+        flow.find('.header').text(event + ' Alternative Paths');
+        mapFlow(event);
       }
-      prevParent.children.push(eventObject);
-    }
-    
-    // custom query
-    function runQuery() {
-      var dateVal = $('#dates').val();
-      var params = {
-        'from_date': dateVal.from,
-        'to_date': dateVal.to,
-        'params': {}
-      };
-      var script = "var event_list = ['homepage new', 'Viewed report', 'Funnel query'];" +
-        "function main() {" +
-            "return Events({})" +
-            ".filter(function(event){ return event['user_id']>500000})" +
-            ".groupByUser(function(state, events) {" +
-                "state = state || {"+
-                    "event_path: [],"+
-                    "funnel_step: 0"+
-                "};"+
-                "for (var i = 0; i < events.length; ++i) {"+
-                    "if ((state.event_path.length === 0 && events[i]['name'] == event_list[0]) || state.event_path.length > 0) {"+
-                        "state.event_path.push(events[i]['name']);"+
-                        "state.funnel_step = 1;"+
-                    "}"+
-                "}"+
-                "return state;"+
-            "})"+
-            ".filter(function(item) {"+
-                "return item.value && item.value.funnel_step > 0;"+
-            "})"+
-            ".reduce(function(accumulators, items) {"+
-                "var ret = [];"+
-                "for (var j = 0; j < accumulators.length; j++) {"+
-                    "ret = accumulators[j];"+
-                "}"+
-                "for (var i = 0; i < items.length; i++) {"+
-                    "ret[i] = {funnel_step: items[i].value.funnel_step, dropoff_path: []};"+
-                    "_.each(event_list.slice(1), function(event, j) {"+
-                        "var eventIndex = items[i].value.event_path.indexOf(event);"+
-                        "if (eventIndex > -1) {"+
-                            "items[i].value.event_path.splice(0, eventIndex+1);"+
-                            "ret[i].funnel_step ++;"+
-                        "}"+
-                        "else {"+
-                            "items[i].value.event_path.splice(3, items[i].value.event_path.length);"+
-                            "ret[i].dropoff_path = items[i].value.event_path;"+
-                        "}"+
-                    "});"+
-                    "ret[i].funnel_step = event_list[ret[i].funnel_step-1]"+
-                "}"+
-                "return ret;"+
-            "})"+
-            ".reduce(function(accumulators, items) {"+
-                "var result = {};"+
-                "for (var i = 0; i < items.length; i++) {"+
-                    "for (var j = 0; j < items[i].length; j++) {"+
-                        "var eventName = items[i][j].funnel_step;"+
-                        "var path = items[i][j].dropoff_path;"+
-                        "result[eventName] = result[eventName] || {count: 0, all_paths: []};"+
-                        "result[eventName].count ++;"+
-                        "result[eventName].all_paths.push(path);"+
-                    "}"+
-                "}"+
-                "return result;"+
-            "})"+
-            ".reduce(function(accumulators, items) {"+
-                "var solution = {};"+
-                "for (var i = 0; i < items.length; i++) {"+
-                    "_.each(Object.keys(items[i]), function(eventName) {"+
-                        "solution[eventName] = solution[eventName] || {count: items[i][eventName].count, flows: {}}"+
-                        "for (var k in items[i][eventName].all_paths) {"+
-                            "var s = solution[eventName].flows;"+
-                            "for (var z in items[i][eventName].all_paths[k]){"+
-                                "var e = items[i][eventName].all_paths[k][z]"+
-                                "s[e] = s[e] || {'count':0, 'next':{}};"+
-                                "s[e].count++;"+
-                                "s = s[e].next;"+
-                            "}"+
-                        "}"+
-                    "})"+
-                "}"+
-                "return solution;"+
-            "});"+
-        "}";
       
-      // MP.api.custom_query(script, {
-      //   'from_date': '2015-11-01',
-      //   'to_date': '2015-11-19',
-      //   'params': params
-      // }).done(function(results) {
-      // });
-      
-      
+      function mapFlow(event) {
+        var flows = cqResult[event].flows[event];
+        var root = event;
+        flowObject = {
+          'name': root + ': ' + flows.count,
+          'count': flows.count,
+          'children': []
+        }
+        _.each(_.keys(flows.next), function(eventName) {
+          getChildren(flowObject, flows.next[eventName], '', eventName)
+        });
+        console.log(flowObject);
+        createFlow(flowObject);
 
-var results = [
-  {
-    "homepage new": {
-      "count": 11,
-      "flows": {
-        "homepage new": {
-          "count": 11,
-          "next": {
-            "Viewed login page": {
-              "count": 1,
-              "next": {}
-            },
-            "homepage lessons learned hovered": {
-              "count": 3,
-              "next": {
-                "Landing: Segmentation": {
-                  "count": 1,
-                  "next": {}
-                },
-                "jobs": {
-                  "count": 1,
-                  "next": {}
-                },
-                "homepage lessons learned hovered": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            },
-            "homepage hero scrolled": {
-              "count": 1,
-              "next": {
-                "homepage hero scrolled": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            },
-            "Landing: Segmentation": {
-              "count": 1,
-              "next": {
-                "homepage new": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            },
-            "homepage new": {
-              "count": 1,
-              "next": {
-                "View pricing page": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            },
-            "View pricing page": {
-              "count": 2,
-              "next": {}
-            }
-          }
-        }
       }
-    },
-    "Viewed report": {
-      "count": 26,
-      "flows": {
-        "Viewed report": {
-          "count": 10,
-          "next": {
-            "Retention query": {
-              "count": 2,
-              "next": {
-                "Retention query": {
-                  "count": 2,
-                  "next": {}
-                }
-              }
-            },
-            "Viewed report": {
-              "count": 4,
-              "next": {
-                "Tutorial Shown": {
-                  "count": 1,
-                  "next": {}
-                },
-                "Viewed report": {
-                  "count": 1,
-                  "next": {}
-                },
-                "Mixpanel Segmentation": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            },
-            "Tutorial Shown": {
-              "count": 2,
-              "next": {
-                "Tutorial Banner Shown": {
-                  "count": 2,
-                  "next": {}
-                }
-              }
-            },
-            "clicked logout link": {
-              "count": 1,
-              "next": {
-                "Viewed login page": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            },
-            "MPPlatform: intro modal viewed": {
-              "count": 1,
-              "next": {
-                "Viewed report": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            }
-          }
-        },
-        "Mixpanel Segmentation": {
-          "count": 4,
-          "next": {
-            "Viewed report": {
-              "count": 1,
-              "next": {
-                "Viewed report": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            },
-            "Segmentation query": {
-              "count": 1,
-              "next": {
-                "Viewed report": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            },
-            "Tutorial Shown": {
-              "count": 2,
-              "next": {
-                "Tutorial Banner Shown": {
-                  "count": 2,
-                  "next": {}
-                }
-              }
-            }
-          }
-        },
-        "Segmentation query": {
-          "count": 2,
-          "next": {
-            "MPPlatform: custom report dropdown viewed": {
-              "count": 1,
-              "next": {
-                "Segmentation query": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            },
-            "Segmentation query": {
-              "count": 1,
-              "next": {
-                "Segmentation query": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            }
-          }
-        },
-        "Done": {
-          "count": 1,
-          "next": {
-            "Viewed report": {
-              "count": 1,
-              "next": {
-                "Done": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            }
-          }
-        },
-        "View pricing page": {
-          "count": 1,
-          "next": {
-            "Viewed report": {
-              "count": 1,
-              "next": {
-                "clicked logout link": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            }
-          }
-        },
-        "Tutorial Banner Shown": {
-          "count": 1,
-          "next": {
-            "Tutorial Shown": {
-              "count": 1,
-              "next": {
-                "Tutorial Banner Shown": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            }
-          }
-        },
-        "Tutorial Shown": {
-          "count": 6,
-          "next": {
-            "Tutorial Banner Shown": {
-              "count": 6,
-              "next": {
-                "Viewed report": {
-                  "count": 3,
-                  "next": {}
-                },
-                "Segmentation query": {
-                  "count": 2,
-                  "next": {}
-                },
-                "Tutorial Shown": {
-                  "count": 1,
-                  "next": {}
-                }
-              }
-            }
+
+      function createFlow(flowObject) {
+        treeRoot = flowObject;
+        treeRoot.x0 = height / 2;
+        treeRoot.y0 = 0;
+
+        function collapse(d) {
+          if (d.children) {
+            d._children = d.children;
+            d._children.forEach(collapse);
+            d.children = null;
           }
         }
+
+        treeRoot.children.forEach(collapse);
+        update(treeRoot);      
       }
-    },
-    "Funnel query": {
-      "count": 11,
-      "flows": {}
-    }
-  }
-]
-        cqResult = results[0];
-        var events = Object.keys(cqResult);
-        for (var i = 0; i < events.length; i++) {
-          var first = i == 0 ? true : false;
-          if (first) {
-            addFunnelStep(events[i], cqResult[events[i]].count, 0, first);
-          } else {
-            addFunnelStep(events[i], cqResult[events[i]].count, cqResult[events[i]].count-cqResult[events[i-1]].count, first);
+      
+      function getChildren(parentObject, flowParent, prevFlowParent, event) {
+        var next = flowParent.next;
+        var eventObject = {
+          'name': event + ': ' + flowParent.count,
+          'count': flowParent.count,
+          'parent': prevFlowParent,
+          'children': []
+        };
+        if ($.isEmptyObject(next) === false) {
+          for (var eventName in next) {
+            getChildren(eventObject, next[eventName], event, eventName);
           }
         }
-      // });
-    }
+        parentObject.children.push(eventObject);
+      }
+
+      // d3 tree flow
+      var margin = {top: 20, right: 120, bottom: 20, left: 120},
+          width = 960 - margin.right - margin.left,
+          height = 800 - margin.top - margin.bottom;
+
+      var i = 0,
+          duration = 750,
+          treeRoot;
+
+      var tree = d3.layout.tree()
+          .size([height, width]);
+
+      var diagonal = d3.svg.diagonal()
+          .projection(function(d) { return [d.y, d.x]; });
+
+      var svg = d3.select("#flow").append("svg")
+          .attr("width", width + margin.right + margin.left)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+      d3.select(self.frameElement).style("height", "800px");
+
+      function update(source) {
+
+        // Compute the new tree layout.
+        var nodes = tree.nodes(treeRoot).reverse(),
+            links = tree.links(nodes);
+
+        // Normalize for fixed-depth.
+        nodes.forEach(function(d) { d.y = d.depth * 300; });
+
+        // Update the nodes…
+        var node = svg.selectAll("g.node")
+            .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+        // Enter any new nodes at the parent's previous position.
+        var nodeEnter = node.enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+            .on("click", click);
+
+        nodeEnter.append("circle")
+            .attr("r", 1e-6)
+            .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+        nodeEnter.append("text")
+            .attr("dx", function(d) { return d.children ? 0 : 10; })
+            .attr("dy", function(d) { return d.children ? 18 : 3; })
+            .attr("text-anchor", "start")
+            .text(function(d) { return d.name; })
+            .style("fill-opacity", 1e-6);
+
+        // Transition nodes to their new position.
+        var nodeUpdate = node.transition()
+            .duration(duration)
+            .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+
+        nodeUpdate.select("circle")
+            .attr("r", 4.5)
+            .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+        nodeUpdate.select("text")
+            .style("fill-opacity", 1);
+
+        // Transition exiting nodes to the parent's new position.
+        var nodeExit = node.exit().transition()
+            .duration(duration)
+            .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+            .remove();
+
+        nodeExit.select("circle")
+            .attr("r", 1e-6);
+
+        nodeExit.select("text")
+            .style("fill-opacity", 1e-6);
+
+        // Update the links…
+        var link = svg.selectAll("path.link")
+            .data(links, function(d) { return d.target.id; });
+
+        // Enter any new links at the parent's previous position.
+        link.enter().insert("path", "g")
+            .attr("class", "link")
+            .attr("d", function(d) {
+              var o = {x: source.x0, y: source.y0};
+              return diagonal({source: o, target: o});
+            });
+
+        // Transition links to their new position.
+        link.transition()
+            .duration(duration)
+            .attr("d", diagonal);
+
+        // Transition exiting nodes to the parent's new position.
+        link.exit().transition()
+            .duration(duration)
+            .attr("d", function(d) {
+              var o = {x: source.x, y: source.y};
+              return diagonal({source: o, target: o});
+            })
+            .remove();
+
+        // Stash the old positions for transition.
+        nodes.forEach(function(d) {
+          d.x0 = d.x;
+          d.y0 = d.y;
+        });
+      }
+
+      // Toggle children on click.
+      function click(d) {
+        if (d.children) {
+          d._children = d.children;
+          d.children = null;
+        } else {
+          d.children = d._children;
+          d._children = null;
+        }
+        update(d);
+      }
+
     </script>
   </body>
 </html>
