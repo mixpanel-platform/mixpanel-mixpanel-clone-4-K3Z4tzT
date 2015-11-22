@@ -216,6 +216,11 @@
       // custom query
       MP.api.setCredentials('e9eb40d73246d38af2e3a425761a73b4', '0d4eaad557622208b4dcdcb1d035aecf');
       function runQuery() {
+        // clear previous query
+        $('#funnel').html('');
+        $('#flow').html('');
+
+        // set up parameters
         event_list = $('#event_list').val().split(', ');
         var dateVal = $('#dates').val();
         var params = {
@@ -254,6 +259,7 @@
             $('.label:nth-child(' + i + ')').text(kFormatter(converted - ((i-1) * increment)));
           }
         }
+        // append converted and dropped sections of funnel bar, event label
         var dropped = first ? '' : dropped;
         var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
         $('<div class="dropped">' + dropped + '</div>').css({'height': dropped*ratio + 'px', 'line-height': dropped*ratio + 'px'}).appendTo(funnelStep);
@@ -306,14 +312,33 @@
           'count': flows.count,
           'children': []
         }
+        
         _.each(_.keys(flows.next), function(eventName) {
           getChildren(flowObject, flows.next[eventName], '', eventName)
         });
+        
         console.log(flowObject);
         createFlow(flowObject);
 
       }
-
+      
+      function getChildren(parentObject, flowParent, prevFlowParent, event) {
+        var next = flowParent.next;
+        var eventObject = {
+          'name': event + ': ' + flowParent.count,
+          'count': flowParent.count,
+          'parent': prevFlowParent,
+          'children': []
+        };
+        
+        if ($.isEmptyObject(next) === false) {
+          for (var eventName in next) {
+            getChildren(eventObject, next[eventName], event, eventName);
+          }
+        }
+        parentObject.children.push(eventObject);
+      }
+      
       function createFlow(flowObject) {
         treeRoot = flowObject;
         treeRoot.x0 = height / 2;
@@ -329,22 +354,6 @@
 
         treeRoot.children.forEach(collapse);
         update(treeRoot);      
-      }
-      
-      function getChildren(parentObject, flowParent, prevFlowParent, event) {
-        var next = flowParent.next;
-        var eventObject = {
-          'name': event + ': ' + flowParent.count,
-          'count': flowParent.count,
-          'parent': prevFlowParent,
-          'children': []
-        };
-        if ($.isEmptyObject(next) === false) {
-          for (var eventName in next) {
-            getChildren(eventObject, next[eventName], event, eventName);
-          }
-        }
-        parentObject.children.push(eventObject);
       }
 
       // d3 tree flow
