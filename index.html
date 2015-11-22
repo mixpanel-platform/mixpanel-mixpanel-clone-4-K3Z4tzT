@@ -200,8 +200,7 @@
     </div>
     <p></p>
     <script>
-      var event_list = $('#event_list').val();
-      var event_list = event_list.split(', ');
+      var event_list = $('#event_list').val().split(', ');
 
       function date_to_string(d) {
           return d.toISOString().split('T')[0];
@@ -210,6 +209,7 @@
       // custom query
       MP.api.setCredentials('e9eb40d73246d38af2e3a425761a73b4', '0d4eaad557622208b4dcdcb1d035aecf');
       function runQuery() {
+        event_list = $('#event_list').val().split(', ');
         var dateVal = $('#dates').val();
         var params = {
           'from_date': date_to_string(dateVal.from),
