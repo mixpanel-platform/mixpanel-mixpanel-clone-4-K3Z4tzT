@@ -433,7 +433,7 @@
 
         nodeEnter.append("circle")
             .attr("r", 1e-6)
-            .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+            .style("fill", function(d) { return d.selected ? "#fff" : "lightsteelblue"; });
 
         nodeEnter.append("text")
             .attr("dx", 10)
@@ -449,11 +449,11 @@
 
         nodeUpdate.select("circle")
             .attr("r", 4.5)
-            .style("fill", function(d) { return d.selected ? "lightsteelblue" : "#fff"; });
+            .style("fill", function(d) { return d.selected ? "#fff" : "lightsteelblue"; });
 
         nodeUpdate.select("text")
             .style("fill-opacity", 1)
-            .style("font-weight", function(d) {return d.selected ? "normal" : "bold"; });
+            .style("font-weight", function(d) {return d.selected ? "bold" : "normal"; });
 
         // Transition exiting nodes to the parent's new position.
         var nodeExit = node.exit().transition()
@@ -502,7 +502,7 @@
 
       // Toggle children on click.
       function click(d) {
-        if (d.children) {
+        if (d.selected) {
           d._children = d.children;
           d.children = null;
           d.selected = false;
