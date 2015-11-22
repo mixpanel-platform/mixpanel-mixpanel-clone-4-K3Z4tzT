@@ -227,7 +227,7 @@
     <div class="mixpanel-platform-section flow">
       <div class="header"></div>
       <div id="flow">
-        <div id="funnel-query"></div>
+        <div id="funnel-query">CREATE FUNNEL</div>
       </div>
     </div>
     <p></p>
@@ -518,7 +518,7 @@
       
       // Find selected nodes on funnel query click
       function getFlowSteps() {
-        var nodes = tree.nodes(treeRoot).reverse();
+        var nodes = $('g');
         nodes.forEach(function(d) {
           return d.selected;
         });
