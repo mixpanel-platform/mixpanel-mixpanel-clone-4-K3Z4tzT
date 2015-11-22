@@ -508,26 +508,29 @@
         });
       }
 
+      var funnel_select = [];
+      
       // Toggle children on click.
       function click(d) {
         if (d.selected) {
           d._children = d.children;
           d.children = null;
           d.selected = false;
-          // funnel_select.pop(d);
+          funnel_select.pop(d);
         } else {
           d.children = d._children;
           d._children = null;
           d.selected = true;
+          funnel_select.push(d);
         }
         update(d);
       }
       
-      var funnel_select;
-      
       // Find selected nodes on funnel query click
       function getFlowSteps() {
-        var nodes = d3.select('g.node');
+        var nodes = d3.select('svg g');
+        console.log(nodes);
+        console.log(d3.select('svg'));
         nodes.forEach(function(d) {
           console.log(d);
           if (d.selected) {
