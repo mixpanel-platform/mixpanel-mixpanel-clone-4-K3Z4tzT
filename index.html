@@ -244,6 +244,12 @@
       $('#run').on('click', function() {
         runQuery();
       });
+      $('#funnel-query').on('click', function() {
+        console.log('hello');
+        getFlowSteps();
+        // $('#event_list').val(steps);
+        // runQuery();
+      });
 
       // custom query
       MP.api.setCredentials('e9eb40d73246d38af2e3a425761a73b4', '0d4eaad557622208b4dcdcb1d035aecf');
@@ -521,7 +527,7 @@
       
       // Find selected nodes on funnel query click
       function getFlowSteps() {
-        var nodes = $('g');
+        var nodes = d3.select('g');
         nodes.forEach(function(d) {
           if (d.selected) {
             funnel_select.push(d.name);
@@ -530,12 +536,6 @@
         console.log(funnel_select);
       }
       
-      $('#funnel-query').on('click', function() {
-        console.log('hello');
-        getFlowSteps();
-        // $('#event_list').val(steps);
-        // runQuery();
-      });
     </script>
   </body>
 </html>
