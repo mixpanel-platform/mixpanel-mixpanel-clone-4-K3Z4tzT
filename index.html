@@ -416,7 +416,8 @@
           .attr("width", width + margin.right + margin.left)
           .attr("height", height + margin.top + margin.bottom)
           .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+          .attr("class", "parent");
 
 
       d3.select(self.frameElement).style("height", "800px");
@@ -527,16 +528,23 @@
       
       // Find selected nodes on funnel query click
       function getFlowSteps() {
-        var nodes = d3.select('svg g');
-        console.log(nodes);
-        console.log(d3.select('svg'));
-        nodes.forEach(function(d) {
-          console.log(d);
-          if (d.selected) {
-            funnel_select.push(d.name);
-          };
+        var parent = d3.selectAll(".parent");
+        parent.each(function(d,i) {            
+           var children = d3.selectAll(this.childNodes).filter(function(d) {
+             return d.selected == true;
+           });
+           console.log(children);
         });
-        console.log(funnel_select);
+        // var nodes = d3.select('svg g');
+        // console.log(nodes);
+        // console.log(d3.select('svg'));
+        // nodes.forEach(function(d) {
+        //   console.log(d);
+        //   if (d.selected) {
+        //     funnel_select.push(d.name);
+        //   };
+        // });
+        // console.log(funnel_select);
       }
       
     </script>
