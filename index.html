@@ -205,10 +205,14 @@
     <script>
       var event_list = $('#event_list').val().split(', ');
 
-      function date_to_string(d) {
-          return d.toISOString().split('T')[0];
-      }
-      
+      // runQuery
+      $(document).ready(function() {
+        runQuery();
+      });
+      $('#dates').on('change', function() {
+        runQuery();
+      });
+
       // custom query
       MP.api.setCredentials('e9eb40d73246d38af2e3a425761a73b4', '0d4eaad557622208b4dcdcb1d035aecf');
       function runQuery() {
@@ -270,6 +274,10 @@
 
       function kFormatter(num) {
         return num > 999 ? (num/1000).toFixed(1) + 'K' : Math.floor(num);
+      }
+      
+      function date_to_string(d) {
+          return d.toISOString().split('T')[0];
       }
       
       // dropoff flows
@@ -461,14 +469,6 @@
         }
         update(d);
       }
-
-      // runQuery
-      $(document).ready(function() {
-        runQuery();
-      });
-      // $('#dates').on('change', function() {
-      //   runQuery();
-      // });
 
     </script>
   </body>
