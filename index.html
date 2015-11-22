@@ -22,6 +22,24 @@
       #event_list {
         display: inline-block;
       }
+      #run {
+        margin-top:5px;
+        float:left;
+        clear:both;
+        padding: 6px 12px;
+        background-color: #61adf0;
+        background-image: -webkit-linear-gradient(#6ab5f2,#53a0ee);
+        background-image: linear-gradient(#6ab5f2,#53a0ee);
+        box-shadow: inset 0 1px 1px #77bdf4,0 2px 2px -1px rgba(0,0,0,0.2);
+        text-transform: uppercase;
+        border: 1px solid #4d93d7;
+        color: #fff;
+        text-shadow: 0 -1px 0 rgba(0,0,0,0.2);
+        border-radius: 3px;
+        cursor: pointer;
+        font-weight: bold;
+        display: inline-block;
+      }
       #dates {
         float: right;
       }
@@ -180,6 +198,7 @@
       <div class="events">
         <div class="events_label">Funnel Steps:</div>
         <input id="event_list" value="homepage new, Viewed report, Funnel query">
+        <div id="run"></div>
       </div>
       <div id="report">
         <div id="background">
@@ -219,6 +238,9 @@
       });
       $('#dates').on('change', function() {
         runQuery();
+      });
+      $('#run').on('click', function() {
+        runquery();
       });
 
       // custom query
