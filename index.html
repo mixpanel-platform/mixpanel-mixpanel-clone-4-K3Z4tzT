@@ -529,6 +529,7 @@
       function getFlowSteps() {
         var nodes = d3.select('g.node');
         nodes.forEach(function(d) {
+          console.log(d);
           if (d.selected) {
             funnel_select.push(d.name);
           };
