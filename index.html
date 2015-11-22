@@ -340,7 +340,8 @@
         flowObject = {
           'name': root + ': ' + flows.count,
           'count': flows.count,
-          'children': []
+          'children': [],
+          'selected': true
         }
         
         _.each(_.keys(flows.next), function(eventName) {
@@ -358,7 +359,8 @@
           'name': event + ': ' + flowParent.count,
           'count': flowParent.count,
           'parent': prevFlowParent,
-          'children': []
+          'children': [],
+          'selected': false
         };
         
         if ($.isEmptyObject(next) === false) {
@@ -447,11 +449,11 @@
 
         nodeUpdate.select("circle")
             .attr("r", 4.5)
-            .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+            .style("fill", function(d) { return d.selected ? "lightsteelblue" : "#fff"; });
 
         nodeUpdate.select("text")
             .style("fill-opacity", 1)
-            .style("font-weight", function(d) {return d.children ? "normal" : "bold"; });
+            .style("font-weight", function(d) {return d.selected ? "normal" : "bold"; });
 
         // Transition exiting nodes to the parent's new position.
         var nodeExit = node.exit().transition()
@@ -503,9 +505,11 @@
         if (d.children) {
           d._children = d.children;
           d.children = null;
+          d.selected = false;
         } else {
           d.children = d._children;
           d._children = null;
+          d.selected = true;
         }
         update(d);
       }
