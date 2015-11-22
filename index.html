@@ -252,6 +252,7 @@
 
         // set up parameters
         event_list = $('#event_list').val().split(', ');
+        console.log(event_list)
         var dateVal = $('#dates').val();
         var params = {
           'from_date': date_to_string(dateVal.from),
