@@ -501,7 +501,7 @@
         var nodeEnter = node.enter().append("g")
             .attr("class", function(d) {return d.parent ? "node" : "root node" })
             .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-            .attr("clip-path", function(d) { return "url(#clip" + d.depth + ")" });
+            .attr("clip-path", function(d) { return "url(#clip" + d.depth + ")" })
             .on("click", click);
 
         nodeEnter.append("circle")
