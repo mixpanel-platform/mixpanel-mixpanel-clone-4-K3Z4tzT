@@ -496,8 +496,10 @@
         // Find max count
         var maxCount = 0;
         nodes.forEach(function(d) { maxCount = d.count > maxCount ? d.count : maxCount });
+        console.log(maxCount);
         
         var ratio = calculateFlowLine(maxCount);
+        console.log(ratio);
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
@@ -557,11 +559,11 @@
         // Enter any new links at the parent's previous position.
         link.enter().insert("path", "g")
             .attr("class", "link")
-            .attr("stroke-width", function(d) { return d.count * ratio })
             .attr("d", function(d) {
               var o = {x: source.x0, y: source.y0};
               return diagonal({source: o, target: o});
-            });
+            })
+            .attr("stroke-width", function(d) { return d.count * ratio });
 
         // Transition links to their new position.
         link.transition()
