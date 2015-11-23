@@ -294,8 +294,8 @@
 
         var root = d3.selectAll(".root");
         root.each(function(d,i) {
-          var index = d.name.lastIndexOf(':');
-          newEvents.push(d.name.substr(0, index));
+          var index = d.name.indexOf(':');
+          newEvents.push(d.name.substr(index+1));
           result = getFlowSteps(d, newEvents);
         });
 
