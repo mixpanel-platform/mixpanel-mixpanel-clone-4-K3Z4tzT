@@ -185,6 +185,9 @@
       }
       .node text {
         font: 10px sans-serif;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
       .link {
         fill: none;
@@ -484,7 +487,7 @@
             links = tree.links(nodes);
 
         // Normalize for fixed-depth.
-        nodes.forEach(function(d) { d.y = 650 / path_length * d.depth; });
+        nodes.forEach(function(d) { d.y = 750 / path_length * d.depth; });
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
@@ -504,8 +507,10 @@
             .attr("dx", 10)
             .attr("dy", 3)
             .attr("text-anchor", "start")
+            .attr("title", function(d) { return d.name; })
             .text(function(d) { return d.name; })
-            .style("fill-opacity", 1e-6);
+            .style("fill-opacity", 1e-6)
+            .style("max-width", 100/(path_length/2));
 
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
