@@ -479,10 +479,6 @@
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       d3.select(self.frameElement).style("height", "800px");
-      
-      for (i=0; i < path_length; i++) {
-        $('<clipPath id="clip' + i + '"><rect x="' + 200/path_length + '" y=40" width="10" height="800"/></clipPath>').appendTo('svg');
-      }
 
       function update(source) {
 
@@ -501,8 +497,8 @@
         var nodeEnter = node.enter().append("g")
             .attr("class", function(d) {return d.parent ? "node" : "root node" })
             .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-            .style("-webkit-clip-path", "polygon(0 0, " + 200/path_length + "px 0, " + 200/path_length + "px 100%, 0% 100%")
-            .style("clip-path", "polygon(0 0, " + 200/path_length + "px 0, " + 200/path_length + "px 100%, 0% 100%")
+            .style("-webkit-clip-path", "polygon(0 0, " + 750/path_length + "px 0, " + 750/path_length + "px 100%, 0% 100%")
+            .style("clip-path", "polygon(0 0, " + 750/path_length + "px 0, " + 750/path_length + "px 100%, 0% 100%")
             .on("click", click);
 
         nodeEnter.append("circle")
