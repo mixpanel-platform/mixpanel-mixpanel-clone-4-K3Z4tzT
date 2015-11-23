@@ -485,7 +485,7 @@
         // Normalize for fixed-depth.
         var maxDepth = 2;
         nodes.forEach(function(d) { maxDepth = d.depth+1 > maxDepth ? maxDepth : d.depth+1; });
-        nodes.forEach(function(d) { d.y = 900 / maxDepth * d.depth; });
+        nodes.forEach(function(d) { d.y = 750 / maxDepth * d.depth; });
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
