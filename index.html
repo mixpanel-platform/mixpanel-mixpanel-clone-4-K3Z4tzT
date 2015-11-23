@@ -561,7 +561,7 @@
         link.enter().insert("path", "g")
             .attr("class", "link")
             .style("stroke-width", function(d) { 
-              var width = d.target.count * ratio > 1 ? d.target.count : 1;
+              var width = d.target.count * ratio > 1 ? d.target.count * ratio : 1;
               return width;
             })
             .attr("d", function(d) {
