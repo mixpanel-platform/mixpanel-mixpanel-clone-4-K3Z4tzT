@@ -495,7 +495,7 @@
         
         // Find max count
         var maxCount = 0;
-        nodes.forEach(function(d) { maxCount = d.count > maxCount ? d.count : maxCount });
+        nodes.forEach(function(d) { if (d.depth > source.depth) maxCount = d.count > maxCount ? d.count : maxCount });
         console.log(maxCount);
         
         var ratio = calculateFlowLine(maxCount);
