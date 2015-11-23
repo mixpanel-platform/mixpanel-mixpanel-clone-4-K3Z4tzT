@@ -317,16 +317,17 @@
       // custom query
       MP.api.setCredentials('e9eb40d73246d38af2e3a425761a73b4', '0d4eaad557622208b4dcdcb1d035aecf');
       function runQuery() {
-        // clear previous query
-        $('#funnel').html('');
-        $('.flow').hide();
-
         // set up parameters
         event_list = $('#event_list').val().split(',');
         if (event_list.length < 2) {
           error('Must have more than one event in a funnel.');
           return;
         }
+        
+        // clear previous query
+        $('#funnel').html('');
+        $('.flow').hide();
+
         var dateVal = $('#dates').val();
         var params = {
           'from_date': date_to_string(dateVal.from),
