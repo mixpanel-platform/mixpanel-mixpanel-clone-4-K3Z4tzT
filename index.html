@@ -290,20 +290,19 @@
       });
       $('#funnel-query').on('click', function() {
         var newEvents = [];
-        var result = '';
 
         var root = d3.selectAll(".root");
         root.each(function(d,i) {
           var index = d.name.indexOf(':');
-          newEvents.push(d.name.substr(index+1));
-          result = getFlowSteps(d, newEvents);
-        });
+          newEvents.push(d.name.substr(index+2));
 
-        if (result != 'error') {
-          newEvents = newEvents.toString();
-          $('#event_list').val(newEvents);
-          runQuery();          
-        }
+          var result = getFlowSteps(d, newEvents);
+          if (result != 'error' && result != undefined) {
+            newEvents = newEvents.toString();
+            $('#event_list').val(newEvents);
+            runQuery();
+          }
+        });
       });
 
       function error(message) {
@@ -324,6 +323,7 @@
 
         // set up parameters
         event_list = $('#event_list').val().split(',');
+        if (event_list.length == 0) return;
         var dateVal = $('#dates').val();
         var params = {
           'from_date': date_to_string(dateVal.from),
@@ -598,7 +598,7 @@
             if (x.selected) {
               nodeChildren.push(x);
               var index = x.name.indexOf(':');
-              children.push(x.name.substr(index+1));
+              children.push(x.name.substr(index+2));
             }
           });
         });
@@ -608,11 +608,9 @@
           return 'error';
         }
         else if (nodeChildren.length > 0 && nodeChildren[0].children) {
-          getFlowSteps(nodeChildren[depth], children);
+          getFlowSteps(nodeChildren[0], children);
         }
-        else {
-          return children;
-        }
+        return children;
       }
       
     </script>
