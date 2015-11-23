@@ -497,8 +497,8 @@
         var nodeEnter = node.enter().append("g")
             .attr("class", function(d) {return d.parent ? "node" : "root node" })
             .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-            .style("-webkit-clip-path", "polygon(-3px 0, " + 720/path_length + "px 0, " + 720/path_length + "px 100%, -3px 100%")
-            .style("clip-path", "polygon(-3px 0, " + 720/path_length + "px 0, " + 720/path_length + "px 100%, -3px 100%")
+            .style("-webkit-clip-path", "polygon(-3px 0, " + 750/path_length + "px 0, " + 750/path_length + "px 100%, -3px 100%")
+            .style("clip-path", "polygon(-3px 0, " + 750/path_length + "px 0, " + 750/path_length + "px 100%, -3px 100%")
             .on("click", click);
 
         nodeEnter.append("circle")
@@ -509,9 +509,12 @@
             .attr("dx", 10)
             .attr("dy", 3)
             .attr("text-anchor", "start")
-            .attr("title", function(d) { return d.name; })
+            // .attr("title", function(d) { return d.name; })
             .text(function(d) { return d.name; })
             .style("fill-opacity", 1e-6);
+            
+        nodeEnter.append("title")
+            .text(function(d) { return d.name; })
 
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
