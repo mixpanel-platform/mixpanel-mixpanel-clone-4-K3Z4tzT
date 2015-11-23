@@ -554,7 +554,8 @@
 
         // Update the links…
         var link = svg.selectAll("path.link")
-            .data(links, function(d) { return d.target.id; });
+            .data(links, function(d) { return d.target.id; })
+            .attr("stroke-width", function(d) { return d.count * ratio });
 
         // Enter any new links at the parent's previous position.
         link.enter().insert("path", "g")
@@ -562,8 +563,7 @@
             .attr("d", function(d) {
               var o = {x: source.x0, y: source.y0};
               return diagonal({source: o, target: o});
-            })
-            .attr("stroke-width", 10)//function(d) { return d.count * ratio });
+            });
 
         // Transition links to their new position.
         link.transition()
