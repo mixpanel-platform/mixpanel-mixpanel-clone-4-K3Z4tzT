@@ -456,7 +456,7 @@
       // d3 tree flow
       var margin = {top: 20, right: 40, bottom: 20, left: 40},
           width = 960 - margin.right - margin.left,
-          height = 800 - margin.top - margin.bottom;
+          height = 920 - margin.top - margin.bottom;
 
       var i = 0,
           duration = 750,
@@ -483,7 +483,9 @@
             links = tree.links(nodes);
 
         // Normalize for fixed-depth.
-        nodes.forEach(function(d) { d.y = d.depth * 300; });
+        var maxDepth = 1;
+        nodes.forEach(function(d) { d.depth > maxDepth ? maxDepth = d.depth; });
+        nodes.forEach(function(d) { d.y = 900 / maxDepth * d.depth; });
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
