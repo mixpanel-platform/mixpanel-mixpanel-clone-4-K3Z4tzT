@@ -492,6 +492,12 @@
 
         // Normalize for fixed-depth.
         nodes.forEach(function(d) { d.y = 850 / path_length * d.depth; });
+        
+        // Find max count
+        var maxCount = 0;
+        nodes.forEach(function(d) { maxCount = d.count > maxCount ? d.count : maxCount });
+        
+        var ratio = calculateFlowLine(maxCount);
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
@@ -551,6 +557,7 @@
         // Enter any new links at the parent's previous position.
         link.enter().insert("path", "g")
             .attr("class", "link")
+            .attr("stroke-width", function(d) { return d.count * ratio })
             .attr("d", function(d) {
               var o = {x: source.x0, y: source.y0};
               return diagonal({source: o, target: o});
