@@ -380,7 +380,7 @@
 
       function calculateFlowLine(count) {
         var count = count || 1;
-        return 10/count;
+        return 25/count;
       }
 
       function kFormatter(num) {
@@ -559,7 +559,7 @@
         console.log(maxCount);
         link.enter().insert("path", "g")
             .attr("class", "link")
-            .attr("stroke-width", function(d) { return d.target.count * ratio })
+            .style("stroke-width", function(d) { return d.target.count * ratio })
             .attr("d", function(d) {
               var o = {x: source.x0, y: source.y0};
               return diagonal({source: o, target: o});
