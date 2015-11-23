@@ -177,8 +177,6 @@
 
       .node {
         cursor: pointer;
-        -webkit-clip-path: polygon(0 0, 75% 0, 75% 100%, 0% 100%);
-        clip-path: polygon(0 0, 75% 0, 75% 100%, 0% 100%);
       }
       .node circle {
         fill: #fff;
@@ -190,8 +188,6 @@
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
-        -webkit-clip-path: polygon(0 0, 75% 0, 75% 100%, 0% 100%);
-        clip-path: polygon(0 0, 75% 0, 75% 100%, 0% 100%);
       }
       .link {
         fill: none;
@@ -505,7 +501,8 @@
         var nodeEnter = node.enter().append("g")
             .attr("class", function(d) {return d.parent ? "node" : "root node" })
             .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-            .attr("clip-path", function(d) { return "url(#clip" + d.depth + ")" })
+            .style("-webkit-clip-path", "polygon(0 0, " + 200/path_length + "px 0, " + 200/path_length + "px 100%, 0% 100%")
+            .style("clip-path", "polygon(0 0, " + 200/path_length + "px 0, " + 200/path_length + "px 100%, 0% 100%")
             .on("click", click);
 
         nodeEnter.append("circle")
