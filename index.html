@@ -409,7 +409,7 @@
         var flows = cqResult[event].flows[event];
         var root = event;
         flowObject = {
-          'name': root + ': ' + flows.count,
+          'name': flows.count + ': ' + root,
           'count': flows.count,
           'children': [],
           'selected': true
@@ -425,7 +425,7 @@
       function getChildren(parentObject, flowParent, prevFlowParent, event) {
         var next = flowParent.next;
         var eventObject = {
-          'name': event + ': ' + flowParent.count,
+          'name': flowParent.count + ': ' + event,
           'count': flowParent.count,
           'parent': prevFlowParent,
           'children': [],
@@ -497,8 +497,8 @@
         var nodeEnter = node.enter().append("g")
             .attr("class", function(d) {return d.parent ? "node" : "root node" })
             .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-            .style("-webkit-clip-path", "polygon(0 0, " + 750/path_length + "px 0, " + 750/path_length + "px 100%, 0% 100%")
-            .style("clip-path", "polygon(0 0, " + 750/path_length + "px 0, " + 750/path_length + "px 100%, 0% 100%")
+            .style("-webkit-clip-path", "polygon(0 0, " + 720/path_length + "px 0, " + 720/path_length + "px 100%, 0% 100%")
+            .style("clip-path", "polygon(0 0, " + 720/path_length + "px 0, " + 720/path_length + "px 100%, 0% 100%")
             .on("click", click);
 
         nodeEnter.append("circle")
@@ -597,8 +597,8 @@
           e.forEach(function(x, k) {
             if (x.selected) {
               nodeChildren.push(x);
-              var index = x.name.lastIndexOf(':');
-              children.push(x.name.substr(0, index));
+              var index = x.name.indexOf(':');
+              children.push(x.name.substr(index+1));
             }
           });
         });
