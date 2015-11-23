@@ -13,7 +13,7 @@
       body {
         color: #5c617b;
       }
-      .events_label {
+      .events_label, .funnel-query-description {
         font-weight: bold;
         font-size: 15px;
         margin-right: 8px;
@@ -22,7 +22,7 @@
       #event_list {
         display: inline-block;
       }
-      #run, #funnel-query {
+      #run, #funnel-query, .alert-ok {
         clear:both;
         vertical-align: 1px;
         margin-left: 10px;
@@ -190,14 +190,52 @@
         fill: none;
         stroke: #ccc;
         stroke-width: 1.5px;
-    }
+      }
+      .funnel-query-description {
+        margin: 0 10px;
+      }
+      #funnel-query {
+        margin: 20px 20px 20px 0;
+      }
+
+      .alert {
+        display: none;
+        position: fixed;
+        margin: 0 auto;
+        left: 0;
+        right: 0;
+        top: 50%;
+        margin-top: -75px;
+        z-index: 20;
+        background-color: #fbfbfb;
+        border: 1px solid #c4c9d8;
+        padding: 20px;
+        width: 300px;
+        min-height: 150px;
+        border-radius: 5px;
+      }
+      .alert-title {
+        text-transform: uppercase;
+        font-weight: 600;
+        margin: 15px;
+      }
+      .alert-content {
+        margin: 15px;
+        line-height: 25px;
+      }
+      .alert-ok {
+        position: absolute;
+        bottom: 15px;
+        right: 35px;
+      }
+
     </style>
 
     <div class="mixpanel-platform-section">
       <div id="dates"></div>
       <div class="events">
         <div class="events_label">Funnel Steps:</div>
-        <input id="event_list" value="homepage new, Viewed report, Funnel query">
+        <input id="event_list" value="homepage new,Viewed report,Funnel query">
         <div id="run">RUN</div>
       </div>
       <div id="report">
@@ -227,12 +265,13 @@
     <div class="mixpanel-platform-section flow">
       <div class="header"></div>
       <div id="flow">
-        <div id="funnel-query">CREATE FUNNEL</div>
+        <div class="funnel-query-description">Build a new funnel based on the events selected in the path below:</div>
+        <div id="funnel-query">BUILD FUNNEL</div>
       </div>
     </div>
     <p></p>
     <script>
-      var event_list = $('#event_list').val().split(', ');
+      var event_list = $('#event_list').val().split(',');
       var funnel_select = [];
 
       // runQuery
@@ -246,10 +285,30 @@
         runQuery();
       });
       $('#funnel-query').on('click', function() {
-        console.log('hello');
-        getFlowSteps();
-        // $('#event_list').val(steps);
-        // runQuery();
+        var newEvents = [];
+        var result = '';
+
+        var root = d3.selectAll(".root");
+        root.each(function(d,i) {
+          var index = d.name.lastIndexOf(':');
+          newEvents.push(d.name.substr(0, index));
+          result = getFlowSteps(d, newEvents);
+        });
+
+        if (result != 'error') {
+          newEvents = newEvents.toString();
+          $('#event_list').val(newEvents);
+          runQuery();          
+        }
+      });
+
+      function error(message) {
+        var alert = $('<div class="alert"><div class="alert-title">Error</div><div class="alert-content">' + message + '</div><div class="alert-ok">OK</div></div>');
+        alert.appendTo('body').fadeIn(200);
+      }
+      // close alerts
+      $('body').on('click', '.alert-ok', function() {
+          $('.alert').remove();
       });
 
       // custom query
@@ -260,8 +319,7 @@
         $('.flow').hide();
 
         // set up parameters
-        event_list = $('#event_list').val().split(', ');
-        console.log(event_list)
+        event_list = $('#event_list').val().split(',');
         var dateVal = $('#dates').val();
         var params = {
           'from_date': date_to_string(dateVal.from),
@@ -303,7 +361,7 @@
         var funnelStep = $('<div class="funnel-step"></div>').appendTo(funnelGraph);
         $('<div class="dropped">' + dropped + '</div>').css({'height': dropped*ratio + 'px', 'line-height': dropped*ratio + 'px'}).appendTo(funnelStep);
         $('<div class="converted">' + converted + '</div>').css({'height': converted*ratio + 'px', 'line-height': converted*ratio + 'px'}).appendTo(funnelStep).addClass(first);
-        $('<div class="column-label">' + eventName + '</div>').appendTo(funnelStep);
+        $('<div class="column-label" title="' + eventName + '">' + eventName + '</div>').appendTo(funnelStep);
       }
       
       function calculateGraphRatio(count) {
@@ -357,9 +415,7 @@
           getChildren(flowObject, flows.next[eventName], '', eventName)
         });
         
-        console.log(flowObject);
         createFlow(flowObject);
-
       }
       
       function getChildren(parentObject, flowParent, prevFlowParent, event) {
@@ -416,9 +472,7 @@
           .attr("width", width + margin.right + margin.left)
           .attr("height", height + margin.top + margin.bottom)
           .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-          .attr("class", "parent");
-
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       d3.select(self.frameElement).style("height", "800px");
 
@@ -437,7 +491,7 @@
 
         // Enter any new nodes at the parent's previous position.
         var nodeEnter = node.enter().append("g")
-            .attr("class", "node")
+            .attr("class", function(d) {return d.parent ? "node" : "root node" })
             .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
             .on("click", click);
 
@@ -525,26 +579,33 @@
         }
         update(d);
       }
-      
+
       // Find selected nodes on funnel query click
-      function getFlowSteps() {
-        var parent = d3.selectAll(".parent");
-        parent.each(function(d,i) {            
-           var children = d3.selectAll(this.childNodes).filter(function(d) {
-             return d.selected == true;
-           });
-           console.log(children);
+      function getFlowSteps(parent, children) {
+        var children = children || [];
+        var nodeChildren = [];
+        var depth = parent.depth;
+
+        d3.selectAll(parent.children).forEach(function(e, j) {
+          e.forEach(function(x, k) {
+            if (x.selected) {
+              nodeChildren.push(x);
+              var index = x.name.lastIndexOf(':');
+              children.push(x.name.substr(0, index));
+            }
+          });
         });
-        // var nodes = d3.select('svg g');
-        // console.log(nodes);
-        // console.log(d3.select('svg'));
-        // nodes.forEach(function(d) {
-        //   console.log(d);
-        //   if (d.selected) {
-        //     funnel_select.push(d.name);
-        //   };
-        // });
-        // console.log(funnel_select);
+        if (nodeChildren.length > 1) {
+          error('Multiple events selected in a step. Please select only one event per step. Events can be selected and deselected by clicking on the event name or applicable node.')
+          console.log('error');
+          return 'error';
+        }
+        else if (nodeChildren.length > 0 && nodeChildren[0].children) {
+          getFlowSteps(nodeChildren[depth], children);
+        }
+        else {
+          return children;
+        }
       }
       
     </script>
