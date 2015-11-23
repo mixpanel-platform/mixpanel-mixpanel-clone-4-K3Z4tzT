@@ -323,7 +323,10 @@
 
         // set up parameters
         event_list = $('#event_list').val().split(',');
-        if (event_list.length == 0) return;
+        if (event_list.length < 2) {
+          error('Must have more than one event in a funnel.');
+          return;
+        }
         var dateVal = $('#dates').val();
         var params = {
           'from_date': date_to_string(dateVal.from),
