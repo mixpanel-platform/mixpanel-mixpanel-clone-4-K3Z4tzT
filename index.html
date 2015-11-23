@@ -497,8 +497,8 @@
         var nodeEnter = node.enter().append("g")
             .attr("class", function(d) {return d.parent ? "node" : "root node" })
             .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-            .style("-webkit-clip-path", "polygon(0 0, " + 720/path_length + "px 0, " + 720/path_length + "px 100%, 0% 100%")
-            .style("clip-path", "polygon(0 0, " + 720/path_length + "px 0, " + 720/path_length + "px 100%, 0% 100%")
+            .style("-webkit-clip-path", "polygon(-3px 0, " + 720/path_length + "px 0, " + 720/path_length + "px 100%, -3px 100%")
+            .style("clip-path", "polygon(-3px 0, " + 720/path_length + "px 0, " + 720/path_length + "px 100%, -3px 100%")
             .on("click", click);
 
         nodeEnter.append("circle")
