@@ -554,12 +554,14 @@
 
         // Update the links…
         var link = svg.selectAll("path.link")
-            .data(links, function(d) { return d.target.id; })
-            .attr("stroke-width", function(d) { return d.count * ratio });
+            .data(links, function(d) { return d.target.id; });
 
         // Enter any new links at the parent's previous position.
+        console.log(ratio);
+        console.log(maxCount);
         link.enter().insert("path", "g")
             .attr("class", "link")
+            .attr("stroke-width", function(d) { return d.count * ratio })
             .attr("d", function(d) {
               var o = {x: source.x0, y: source.y0};
               return diagonal({source: o, target: o});
