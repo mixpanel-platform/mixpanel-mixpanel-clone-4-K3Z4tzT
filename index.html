@@ -480,8 +480,8 @@
 
       d3.select(self.frameElement).style("height", "800px");
       
-      for (i=1; i <= path_length; i++) {
-        $('<clipPath id="clip' + i + '"><rect x="200" y="10" width="60" height="100"/></clipPath>').appendTo('svg');
+      for (i=0; i < path_length; i++) {
+        $('<clipPath id="clip' + i + '"><rect x="' + 200/path_length + '" y=40" width="10" height="800"/></clipPath>').appendTo('svg');
       }
 
       function update(source) {
