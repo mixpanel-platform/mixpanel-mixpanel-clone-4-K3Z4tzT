@@ -497,7 +497,7 @@
         var nodeEnter = node.enter().append("g")
             .attr("class", function(d) {return d.parent ? "node" : "root node" })
             .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-            // .style("max-width", 100/(path_length/2))
+            .style("max-width", 200/path_length + 'px')
             .on("click", click);
 
         nodeEnter.append("circle")
@@ -509,9 +509,9 @@
             .attr("dy", 3)
             .attr("text-anchor", "start")
             .attr("title", function(d) { return d.name; })
-            .attr("textLength", 100/path_length*0.5)
             .text(function(d) { return d.name; })
-            .style("fill-opacity", 1e-6);
+            .style("fill-opacity", 1e-6)
+            .style("max-width", 200/path_length + 'px');
 
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
