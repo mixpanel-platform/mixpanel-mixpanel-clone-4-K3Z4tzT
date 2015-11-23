@@ -320,7 +320,7 @@
         // set up parameters
         event_list = $('#event_list').val().split(',');
         if (event_list.length < 2) {
-          error('Must have more than one event in a funnel.');
+          error('Must have more than one event in a funnel. Events can be selected or deselected by clicking on the event name or applicable node.');
           return;
         }
         
@@ -609,7 +609,7 @@
           });
         });
         if (nodeChildren.length > 1) {
-          error('Multiple events selected in a step. Please select only one event per step. Events can be selected and deselected by clicking on the event name or applicable node.')
+          error('Multiple events selected in a step. Please select only one event per step. Events can be selected or deselected by clicking on the event name or applicable node.')
           console.log('error');
           return 'error';
         }
