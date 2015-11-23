@@ -193,6 +193,7 @@
         fill: none;
         stroke: #ccc;
         stroke-width: 1.5px;
+        stroke-linecap: round;
       }
       .funnel-query-description {
         margin: 0 10px;
@@ -380,7 +381,7 @@
 
       function calculateFlowLine(count) {
         var count = count || 1;
-        return 25/count;
+        return 15/count;
       }
 
       function kFormatter(num) {
