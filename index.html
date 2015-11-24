@@ -423,7 +423,7 @@
         _.each(_.keys(flows.next), function(eventName) {
           getChildren(flowObject, flows.next[eventName], '', eventName)
         });
-        
+        console.log(flowObject);
         createFlow(flowObject);
       }
       
