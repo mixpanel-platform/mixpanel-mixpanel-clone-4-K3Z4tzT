@@ -335,7 +335,7 @@
           'params': '{}'
         };
         var script = $('#cq').html();
-        script = $.strip(script);
+        script = $.trim(script);
         
         MP.api.custom_query(script, params).done(function(results) {
           cqResult = results[0];
