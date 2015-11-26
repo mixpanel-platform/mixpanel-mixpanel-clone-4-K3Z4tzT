@@ -412,7 +412,7 @@
       }
       
       function mapFlow(index) {
-        var flows = cqResult[index].next[event];
+        var flows = cqResult[index];
         var root = event_list[index];
         flowObject = {
           'name': flows.count + ': ' + root,
