@@ -330,13 +330,13 @@
 
         var dateVal = $('#dates').val();
         var params = {
-          from_date: date_to_string(dateVal.from),
-          to_date: date_to_string(dateVal.to),
-          params: {
-            event_list: event_list,
-            path_length: path_length,
-            from_date: date_to_string(dateVal.from),
-            to_date: date_to_string(dateVal.to),
+          'from_date': date_to_string(dateVal.from),
+          'to_date': date_to_string(dateVal.to),
+          'params': {
+            'event_list': event_list,
+            'path_length': path_length,
+            'from_date': date_to_string(dateVal.from),
+            'to_date': date_to_string(dateVal.to),
           }
         };
         var script = $('#cq').html();
