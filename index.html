@@ -334,7 +334,8 @@
           'to_date': date_to_string(dateVal.to),
           'params': '{}'
         };
-        var script = 'function main(){return Events(' + JSON.stringify(params) + ').groupByUser(function(e,t){e=e||{event_path:[],funnel_step:0};for(var n=0;n<t.length;++n)(0===e.event_path.length&&t[n].name==event_list[0]||e.event_path.length>0)&&(e.event_path.push(t[n].name),e.funnel_step=1);return e}).filter(function(e){return e.value&&e.value.funnel_step>0}).reduce(function(e,t){for(var n=[],a=0;a<t.length;a++)n[a]={funnel_step:t[a].value.funnel_step,dropoff_path:[]},_.each(event_list.slice(1),function(e,r){var l=t[a].value.event_path.indexOf(e);l>-1?(t[a].value.event_path.splice(0,l),n[a].funnel_step++):(t[a].value.event_path.splice(path_length,t[a].value.event_path.length),n[a].dropoff_path=t[a].value.event_path)}),n[a].funnel_step=event_list[n[a].funnel_step-1];for(var r=0;r<e.length;r++){var l=e[r];_.each(l,function(e){n.push(e)})}return n}).reduce(function(e,t){for(var n={},a=0;a<t.length;a++)for(var r=0;r<t[a].length;r++){var l=t[a][r].funnel_step,u=t[a][r].dropoff_path;n[l]=n[l]||{count:0,all_paths:[]},n[l].count++,n[l].all_paths.push(u)}return n}).reduce(function(e,t){for(var n={},a=0,r=0;r<t.length;r++)for(var l=event_list.length-1;l>=0;l--){var u=event_list[l],v=t[r][u].count;a+=v,n[u]=n[u]||{total:a,flows:{}};for(var f in t[r][u].all_paths){var p=n[u].flows;for(var o in t[r][u].all_paths[f]){var _=t[r][u].all_paths[f][o];p[_]=p[_]||{count:0,next:{}},p[_].count++,p=p[_].next}}}return n})}var path_length=' + path_length + ';var event_list=' + JSON.stringify(event_list) + ';'
+        var script = $('#cq').html();
+        script = $.strip(script);
         
         MP.api.custom_query(script, params).done(function(results) {
           cqResult = results[0];
@@ -631,5 +632,116 @@
       }
       
     </script>
+    
+    <script type="text/cq" id="cq">
+      var EVENT_LIST = params.event_list || ['homepage new', 'Viewed report', 'Funnel query'];
+      var PATH_LENGTH =  params.path_length || 4;
+      
+      function main() {
+          return Events({
+              from_date: params.from_date,
+              to_date: params.to_date
+          })
+          .groupByUser(function(state, events) {
+              // collect the event list of each user, if they entered the funnel
+              state = state || {
+                  current_step: -1,
+                  exit_path: []
+              };
+              _.each(events, function(e) {
+                  if (EVENT_LIST[state.current_step + 1] == e.name) {
+                      state.exit_path = [];
+                      state.current_step += 1;
+                  } else if (state.exit_path.length < PATH_LENGTH) {
+                      state.exit_path.push(e.name);
+                  }
+              });
+      
+              return state;
+          })
+          .filter(function(item) {
+              // filter out users who did not enter the funnel
+              return item.value.current_step > -1;
+          })
+          .reduce(function(previous_outputs, user_states) {
+              /* Input:
+               *
+               * [{ value: { current_step: 1, exit_path: ["e1", "e2", "e3"] }, key: [...]}, { value: ..., key: [..]}, ... ]
+               */
+      
+              /*
+               * Output:
+               *
+               * [
+               *  {
+               *      step: "homepage new",
+               *      count: 12345,
+               *      next: {
+               *          "event name 1": {
+               *              count: 123,
+               *              next: {}
+               *          }
+               *      }
+               *  },
+               * ]
+               */
+      
+              var output = [];
+              _.each(EVENT_LIST, function(e) {
+                  output.push({ step: e, count: 0, next: {} });
+              });
+      
+              _.each(user_states, function(state) {
+                  state = state.value;
+                  var step = 0;
+                  while (step < state.current_step) {
+                      output[step].count++;
+                      step++;
+                  }
+                  if (step != state.current_step) { throw "you got a bug" }
+      
+                  output[step].count++;
+                  var flow = output[step].next;
+                  _.each(state.exit_path, function(e) {
+                      flow[e] = flow[e] || { count: 0, next: {}};
+                      flow[e].count++;
+                      flow = flow[e].next;
+                  });
+              });
+      
+              _.each(previous_outputs, function(previous_output) {
+                  merge(output, previous_output);
+              });
+      
+              return output;
+          });
+      
+          function merge(output1, output2) {
+              for (var i = 0; i < output2.length; i++) {
+                  output1[i].count += output2[i].count;
+                  recursiveSumMerge(output1[i].next, output2[i].next);
+              }
+          }
+      
+          function recursiveSumMerge(d1, d2) {
+              for (var key in d2) {
+                  var v1 = d1[key],
+                      v2 = d2[key];
+      
+                  if (!(key in d1)) {
+                      d1[key] = v2;
+                  } else if (typeof v1 === "number" && typeof v2 === "number") {
+                      d1[key] += v2;
+                  } else if (typeof v1 === "object" && typeof v2 === "object") {
+                      recursiveSumMerge(v1, v2);
+                  } else {
+                      throw "mismatched types for key: " + key;
+                  }
+              }
+          }
+      }
+
+    </script>
+
   </body>
 </html>
