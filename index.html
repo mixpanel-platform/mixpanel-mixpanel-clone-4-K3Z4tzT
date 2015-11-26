@@ -407,12 +407,13 @@
       function showFlow(event) {
         var flow = $('.flow').show();
         flow.find('.header').text(event + ' Alternative Paths');
-        mapFlow(event);
+        var index = event_list.indexOf(event);
+        mapFlow(index);
       }
       
-      function mapFlow(event) {
-        var flows = cqResult[event].next[event];
-        var root = event;
+      function mapFlow(index) {
+        var flows = cqResult[index].next[event];
+        var root = event_list[index];
         flowObject = {
           'name': flows.count + ': ' + root,
           'count': flows.count,
