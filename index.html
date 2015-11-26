@@ -329,15 +329,16 @@
         $('.flow').hide();
 
         var dateVal = $('#dates').val();
-        var params = {
-          'from_date': date_to_string(dateVal.from),
-          'to_date': date_to_string(dateVal.to),
-          'params': {
-            'event_list': event_list,
-            'path_length': path_length,
-            'from_date': date_to_string(dateVal.from),
-            'to_date': date_to_string(dateVal.to),
+        var queryParams = {
+            event_list: event_list,
+            path_length: path_length,
+            from_date: date_to_string(dateVal.from),
+            to_date: date_to_string(dateVal.to),
           }
+        var params = {
+          from_date: date_to_string(dateVal.from),
+          to_date: date_to_string(dateVal.to),
+          params: JSON.stringify(queryParams)
         };
         var script = $('#cq').html();
         script = $.trim(script);
