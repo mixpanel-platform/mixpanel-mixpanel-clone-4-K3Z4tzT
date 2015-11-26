@@ -492,13 +492,14 @@
             links = tree.links(nodes);
 
         // Normalize for fixed-depth.
-        nodes.forEach(function(d) { d.y = 850 / path_length * d.depth; });
+        nodes.forEach(function(d) { d.y = 850 / flow_length * d.depth; });
         
         // Find max count
         var maxCount = 0;
         nodes.forEach(function(d) { if (d.depth > source.depth) maxCount = d.count > maxCount ? d.count : maxCount });
 
         var ratio = calculateFlowLine(maxCount);
+        var flow_length = path_length + 1;
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
@@ -508,8 +509,8 @@
         var nodeEnter = node.enter().append("g")
             .attr("class", function(d) {return d.parent ? "node" : "root node" })
             .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-            .style("-webkit-clip-path", "polygon(-3px 0, " + 750/path_length + "px 0, " + 750/path_length + "px 100%, -3px 100%")
-            .style("clip-path", "polygon(-3px 0, " + 750/path_length + "px 0, " + 750/path_length + "px 100%, -3px 100%")
+            .style("-webkit-clip-path", "polygon(-3px 0, " + 750/flow_length + "px 0, " + 750/flow_length + "px 100%, -3px 100%")
+            .style("clip-path", "polygon(-3px 0, " + 750/flow_length + "px 0, " + 750/flow_length + "px 100%, -3px 100%")
             .on("click", click);
 
         nodeEnter.append("circle")
@@ -556,8 +557,6 @@
             .data(links, function(d) { return d.target.id; });
 
         // Enter any new links at the parent's previous position.
-        console.log(ratio);
-        console.log(maxCount);
         link.enter().insert("path", "g")
             .attr("class", "link")
             .style("stroke-width", function(d) { 
@@ -665,28 +664,6 @@
               return item.value.current_step > -1;
           })
           .reduce(function(previous_outputs, user_states) {
-              /* Input:
-               *
-               * [{ value: { current_step: 1, exit_path: ["e1", "e2", "e3"] }, key: [...]}, { value: ..., key: [..]}, ... ]
-               */
-      
-              /*
-               * Output:
-               *
-               * [
-               *  {
-               *      step: "homepage new",
-               *      count: 12345,
-               *      next: {
-               *          "event name 1": {
-               *              count: 123,
-               *              next: {}
-               *          }
-               *      }
-               *  },
-               * ]
-               */
-      
               var output = [];
               _.each(EVENT_LIST, function(e) {
                   output.push({ step: e, count: 0, next: {} });
