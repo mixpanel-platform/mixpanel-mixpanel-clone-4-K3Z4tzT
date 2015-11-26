@@ -486,6 +486,7 @@
       d3.select(self.frameElement).style("height", "800px");
 
       function update(source) {
+        var flow_length = path_length + 1;
 
         // Compute the new tree layout.
         var nodes = tree.nodes(treeRoot).reverse(),
@@ -499,8 +500,6 @@
         nodes.forEach(function(d) { if (d.depth > source.depth) maxCount = d.count > maxCount ? d.count : maxCount });
 
         var ratio = calculateFlowLine(maxCount);
-        var flow_length = path_length + 1;
-        console.log(flow_length);
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
