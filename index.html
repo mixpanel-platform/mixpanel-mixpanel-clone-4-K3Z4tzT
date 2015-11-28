@@ -160,7 +160,7 @@
       }
       
       .flow {
-        /*display: none;*/
+        display: none;
       }
       .header {
         padding: 10px 0;
@@ -326,7 +326,7 @@
         
         // clear previous query
         $('#funnel').html('');
-        // $('.flow').hide();
+        $('.flow').hide();
 
         var dateVal = $('#dates').val();
         var queryParams = {
@@ -450,7 +450,6 @@
       }
       
       function createFlow(flowObject) {
-        console.log(flowObject)
         treeRoot = flowObject;
         treeRoot.x0 = height / 2;
         treeRoot.y0 = 0;
@@ -491,7 +490,6 @@
       d3.select(self.frameElement).style("height", "800px");
 
       function update(source) {
-        console.log(source)
         var flow_length = path_length + 1;
 
         // Compute the new tree layout.
