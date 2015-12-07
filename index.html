@@ -334,14 +334,11 @@
             path_length: path_length,
             from_date: date_to_string(dateVal.from),
             to_date: date_to_string(dateVal.to),
-          }
-        var params = {
-          params: JSON.stringify(queryParams)
-        };
+          };
         var script = $('#cq').html();
         script = $.trim(script);
         
-        MP.api.custom_query(script, params).done(function(results) {
+        MP.api.custom_query(script, queryParams).done(function(results) {
           cqResult = results[0];
           for (var i = 0; i < event_list.length; i++) {
             var first = i == 0 ? true : false;
